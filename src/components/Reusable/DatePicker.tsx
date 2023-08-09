@@ -1,16 +1,17 @@
-import { useState } from 'react';
 import { DatePickerInput } from '@mantine/dates';
+import useDates from '../../store/useDates';
 
 const DatePicker = () => {
-  const [value, setValue] = useState<Date | null>(null);
+  const { selectedDate, setSelectedDate } = useDates();
 
   return (
     <DatePickerInput
       placeholder='Select Date'
       label='Choose a Date to Generate PowerPoint'
+      firstDayOfWeek={0}
       size='sm'
-      value={value}
-      onChange={setValue}
+      value={selectedDate}
+      onChange={setSelectedDate}
     />
   );
 };

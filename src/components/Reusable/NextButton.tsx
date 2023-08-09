@@ -1,9 +1,17 @@
 import { Button } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 
-const NextButton = () => {
+interface NextButtonProps {
+  onClick?: () => void;
+}
+
+const NextButton = ({ onClick }: NextButtonProps) => {
   return (
-    <Button rightIcon={<IconChevronRight size={14} />} color='teal'>
+    <Button
+      onClick={onClick}
+      rightIcon={<IconChevronRight size={14} />}
+      color='teal'
+    >
       Next
     </Button>
   );

@@ -4,13 +4,13 @@ import { Flex } from '@mantine/core';
 interface PageLayoutProps {
   header: ReactElement;
   form: ReactElement;
-  footer: ReactElement;
+  footer?: ReactElement;
 }
 
 const PageLayout = ({ header, form, footer }: PageLayoutProps) => {
   return (
     <Flex
-      gap='md'
+      gap='sm'
       justify='center'
       align='center'
       direction='column'

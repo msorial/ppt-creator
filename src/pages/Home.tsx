@@ -1,58 +1,50 @@
-import { Flex, Group, Stack, Text } from '@mantine/core';
-import BackButton from '../components/Reusable/BackButton';
+import { Flex, Group, Stack, Text, useMantineTheme } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import DatePicker from '../components/Reusable/DatePicker';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useDates from '../store/useDates';
+import { useMediaQuery } from '@mantine/hooks';
 
 const Home = () => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [copticData, setCopticData] = useState({});
+  const { currentCopticDates, selectedDate, setCurrentCopticDates } =
+    useDates();
   const navigate = useNavigate();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   useEffect(() => {
-    // Fetch the API data when the component mounts
-    fetchApiData();
-  }, []);
-
-  const fetchApiData = () => {
-    // Make an API call to get the data (replace 'http://example.com/api' with your API endpoint)
+    // Fetches the Date Information on Mount and sets it in Global State
     fetch('http://192.81.219.24:8080/home')
       .then((response) => response.json())
       .then((data) => {
-        setCopticData(data);
+        setCurrentCopticDates(data);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
       });
-  };
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (startDate !== null) {
-      const formattedDate = startDate.toLocaleDateString('en-CA');
-      const formattedDateString = startDate.toLocaleDateString('en-US', {
-        weekday: 'long', // Full name of the day (e.g., "Friday")
-        month: 'long', // Full name of the month (e.g., "March")
-        day: 'numeric', // Day of the month (e.g., "3")
-        year: 'numeric', // Four-digit year (e.g., "2023")
+  const handleSubmit = () => {
+    if (selectedDate !== null) {
+      const formattedDate = selectedDate.toLocaleDateString('en-CA');
+      const formattedDateString = selectedDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
       });
-      console.log('Selected date:', formattedDate);
-      // Handle form submission logic here
+
       axios
         .post('http://192.81.219.24:8080/date?date=' + formattedDate)
         .then((response) => {
-          console.log('API response:', response.data);
-          // Redirect to another page after successful submission
-          navigate('/vespers', { state: { formattedDateString } }); // Change "/another-page" to the desired URL
+          navigate('/vespers', { state: { formattedDateString } });
         })
         .catch((error) => {
           console.error('Error submitting data:', error);
-          // Handle any error or show a message to the user
         });
     }
   };
@@ -61,21 +53,30 @@ const Home = () => {
     <PageLayout
       header={
         <Flex
-          gap='md'
+          gap='xl'
           justify='space-between'
-          align='center'
+          align='end'
           direction='row'
           wrap='nowrap'
-          sx={{ width: '70%' }}
+          sx={{ width: isMobile ? '100%' : '80%' }}
         >
-          <Text>{copticData.copticDate}</Text>
-          <Text>{copticData.sunday}</Text>
+          <Stack justify='flex-end' spacing='xs'>
+            <Text align='left'>{currentCopticDates?.copticDate}</Text>
+            {currentCopticDates?.sunday !== 'WEEKDAY' && (
+              <Text align='left'>{currentCopticDates?.sunday}</Text>
+            )}
+          </Stack>
+
+          <Stack justify='flex-end' spacing='xs'>
+            {/* <Text align='right'>{currentCopticDates.ocassion}</Text> */}
+            <Text align='right'>{currentCopticDates?.season}</Text>
+          </Stack>
         </Flex>
       }
       form={<FormCard content={<DatePicker />} />}
       footer={
         <Group>
-          <NextButton />
+          <NextButton onClick={handleSubmit} />
         </Group>
       }
     />
@@ -83,10 +84,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// <Group>
-//   <BackButton />
-//   <NextButton />
-//   <DatePicker />
-//   <FormCard content={<div>test</div>} />
-// </Group>
