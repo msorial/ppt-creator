@@ -1,20 +1,17 @@
 import {
-  Center,
   Checkbox,
   Flex,
   Group,
   SegmentedControl,
   Stack,
   Text,
-  Title,
   useMantineTheme,
 } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
-import DatePicker from '../components/Reusable/DatePicker';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
