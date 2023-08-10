@@ -18,7 +18,7 @@ const FormCard: React.FC<FormCardProps> = ({ content }) => {
       sx={{ width: isMobile ? '100%' : '80%' }}
     >
       {/* Hard coded value, change in future */}
-      <Progress size='md' value={20} striped sx={{ margin: '5px' }} />
+      <Progress size='md' value={20} sx={{ margin: '5px' }} />
       <Box sx={{ padding: '24px' }}>{content}</Box>
     </Paper>
   );

@@ -17,32 +17,33 @@ import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
+import FormField from '../components/Reusable/FormField';
 
-interface VespersApiProps {
+export interface VespersApiProps {
   Vespers: string;
-  VespersPsalmResponse: string;
+  vespersPrayerofThanksgiving: string;
+  vespersVerseofTheCymbals: string;
+  vespersLitaines: string;
+  vesperspreDoxoPrayers: string;
+  vesperspreDoxoPrayersUniversal: string;
   seasonVespersDoxologies: string[];
+  vespersDoxolgiesConcl: string;
+  vespersintroToCreed: string;
+  vesperscreed: string;
+  vespersOGodHaveMercy: string;
+  vespersLitanyofTheGospel: string;
+  VespersPsalmResponse: string;
+  vespersGospel: string;
+  vespersGospelResponse: string;
   vespers5ShortLitanies: string;
   vespersAbsolution: string;
   vespersConcludingHymn: string;
   vespersConclusion: string;
-  vespersDoxolgiesConcl: string;
-  vespersGospel: string;
-  vespersGospelResponse: string;
-  vespersLitaines: string;
-  vespersLitanyofTheGospel: string;
-  vespersOGodHaveMercy: string;
-  vespersPrayerofThanksgiving: string;
-  vespersVerseofTheCymbals: string;
-  vesperscreed: string;
-  vespersintroToCreed: string;
-  vesperspreDoxoPrayers: string;
-  vesperspreDoxoPrayersUniversal: string;
 }
 
 interface VespersOptionsProps {
   doxologies: string[];
-  gospelLitany: string;
+  gospelLitany: string | undefined;
   fiveLitanies: string;
 }
 
@@ -58,9 +59,26 @@ const Vespers = () => {
   const [vesperOptions, setVesperOptions] = useState<VespersOptionsProps>({
     doxologies: [],
     gospelLitany: 'alternate',
-    fiveLitanies: 'yes',
+    fiveLitanies: 'no',
   });
 
+  useEffect(() => {
+    // TODO: Make this date dynamic based off date chosen and deep linking??
+    fetch('http://192.81.219.24:5000/vespers?date=2023-08-27')
+      .then((response) => response.json())
+      .then((data) => {
+        setVesperOptions({
+          ...vesperOptions,
+          gospelLitany: data?.vespersLitanyofTheGospel,
+          fiveLitanies: data?.vespers5ShortLitanies,
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching API data:', error);
+      });
+  }, []);
+
+  // This useEffect gives me the Doxology options for that given date
   useEffect(() => {
     fetch('http://192.81.219.24:8080/vespers')
       .then((response) => response.json())
@@ -72,6 +90,8 @@ const Vespers = () => {
         console.error('Error fetching API data:', error);
       });
   }, []);
+
+  console.log(vesperOptions);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const item = event.target.value;
@@ -102,9 +122,10 @@ const Vespers = () => {
     modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
     axios
-      .post('http://localhost:5000/vespers', modifiedVespersData)
+      .post('http://192.81.219.24:5000/vespers', modifiedVespersData)
       .then(() => {
         navigate('/matins');
+        console.log('PPT Created');
       })
       .catch((error) => {
         console.error('Error submitting data:', error);
@@ -139,21 +160,21 @@ const Vespers = () => {
               align='flex-start'
               direction='column'
             >
-              <CardHeader title='Vespers' />
+              <CardHeader header='Vespers' />
 
-              <Stack align='flex-start' spacing={5}>
-                <Text fz='md' fw={500}>
-                  Bishop Present
-                </Text>
-
-                <SegmentedControl
-                  sx={{ width: '100%' }}
-                  data={[
-                    { label: 'No', value: 'ng' },
-                    { label: 'Yes', value: 'yes' },
-                  ]}
-                />
-              </Stack>
+              <FormField
+                title='Bishop Present'
+                options={
+                  <SegmentedControl
+                    data={[
+                      { label: 'No', value: 'ng' },
+                      { label: 'Yes', value: 'yes' },
+                    ]}
+                    sx={{ width: '100%' }}
+                    color='dark'
+                  />
+                }
+              />
 
               <Stack align='flex-start' spacing={5}>
                 <Text fz='md' fw={500}>
@@ -166,7 +187,6 @@ const Vespers = () => {
                         <Checkbox
                           mt='sm'
                           key={index}
-                          name='seasonalDoxoMatins'
                           value={item}
                           checked={vesperOptions.doxologies.includes(item)}
                           onChange={handleCheckboxChange}
@@ -177,47 +197,47 @@ const Vespers = () => {
                   : null}
               </Stack>
 
-              <Stack align='flex-start' spacing={5}>
-                <Text fz='md' fw={500}>
-                  Litany of the Gospel
-                </Text>
+              <FormField
+                title='Litany of the Gospel'
+                options={
+                  <SegmentedControl
+                    data={[
+                      { label: 'Alternate', value: 'alternate' },
+                      { label: 'Standard', value: 'standard' },
+                    ]}
+                    value={vesperOptions.gospelLitany}
+                    onChange={(value: string) =>
+                      setVesperOptions({
+                        ...vesperOptions,
+                        gospelLitany: value,
+                      })
+                    }
+                    sx={{ width: '100%' }}
+                    color='dark'
+                  />
+                }
+              />
 
-                <SegmentedControl
-                  sx={{ width: '100%' }}
-                  data={[
-                    { label: 'Alternate', value: 'alternate' },
-                    { label: 'Standard', value: 'standard' },
-                  ]}
-                  value={vesperOptions.gospelLitany}
-                  onChange={(value: string) =>
-                    setVesperOptions({
-                      ...vesperOptions,
-                      gospelLitany: value,
-                    })
-                  }
-                />
-              </Stack>
-
-              <Stack align='flex-start' spacing={5}>
-                <Text fz='md' fw={500}>
-                  Five Short Litanies
-                </Text>
-
-                <SegmentedControl
-                  sx={{ width: '100%' }}
-                  data={[
-                    { label: 'Yes', value: 'yes' },
-                    { label: 'No', value: 'no' },
-                  ]}
-                  value={vesperOptions.fiveLitanies}
-                  onChange={(value: string) =>
-                    setVesperOptions({
-                      ...vesperOptions,
-                      fiveLitanies: value,
-                    })
-                  }
-                />
-              </Stack>
+              <FormField
+                title='Five Short Litanies'
+                options={
+                  <SegmentedControl
+                    data={[
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
+                    ]}
+                    value={vesperOptions.fiveLitanies}
+                    onChange={(value: string) =>
+                      setVesperOptions({
+                        ...vesperOptions,
+                        fiveLitanies: value,
+                      })
+                    }
+                    sx={{ width: '100%' }}
+                    color='dark'
+                  />
+                }
+              />
             </Flex>
           }
         />

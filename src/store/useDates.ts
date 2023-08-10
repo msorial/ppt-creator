@@ -16,7 +16,6 @@ interface DateState {
   setSelectedDate: (date: Date) => void;
 }
 
-
 const useDates = create<DateState>((set) => ({
   currentCopticDates: null,
   selectedCopticDates: null,

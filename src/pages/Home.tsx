@@ -1,4 +1,5 @@
 import { Flex, Group, Stack, Text, useMantineTheme } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import NextButton from '../components/Reusable/NextButton';
 import DatePicker from '../components/Reusable/DatePicker';
 import FormCard from '../components/Reusable/FormCard';
@@ -8,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 const Home = () => {
   const { currentCopticDates, selectedDate, setCurrentCopticDates } =
@@ -31,22 +33,24 @@ const Home = () => {
   const handleSubmit = () => {
     if (selectedDate !== null) {
       const formattedDate = selectedDate.toLocaleDateString('en-CA');
-      const formattedDateString = selectedDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      });
 
       axios
         .post('http://192.81.219.24:8080/date?date=' + formattedDate)
-        .then((response) => {
-          navigate('/vespers', { state: { formattedDateString } });
+        .then(() => {
+          navigate('/vespers');
         })
         .catch((error) => {
           console.error('Error submitting data:', error);
         });
-    }
+    } else
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 5000,
+        title: 'Select Date',
+        message: 'Date must be selected to generate powerpoint',
+        color: 'red',
+        icon: <IconAlertCircle />,
+      });
   };
 
   return (

@@ -1,10 +1,10 @@
 import { Title } from '@mantine/core';
 
 interface CardHeaderProps {
-  title: string;
+  header: string;
 }
 
-const CardHeader: React.FC<CardHeaderProps> = ({ title }) => {
+const CardHeader: React.FC<CardHeaderProps> = ({ header }) => {
   return (
     <Title
       order={3}
@@ -12,7 +12,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title }) => {
       gradient={{ from: '#373B44', to: '#4286f4', deg: 45 }}
       ta='center'
     >
-      {title}
+      {header}
     </Title>
   );
 };
