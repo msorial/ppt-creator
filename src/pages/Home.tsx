@@ -12,7 +12,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { IconAlertCircle } from '@tabler/icons-react';
 
 const Home = () => {
-  const { currentCopticDates, selectedDate, setCurrentCopticDates } =
+  const { currentCopticDates, selectedDate, apiDate, setCurrentCopticDates } =
     useDates();
   const navigate = useNavigate();
   const theme = useMantineTheme();
@@ -32,10 +32,8 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedDate !== null) {
-      const formattedDate = selectedDate.toLocaleDateString('en-CA');
-
       axios
-        .post('http://192.81.219.24:8080/date?date=' + formattedDate)
+        .post('http://192.81.219.24:8080/date?date=' + apiDate)
         .then(() => {
           navigate('/vespers');
         })

@@ -3,7 +3,7 @@ import useDates from '../../store/useDates';
 import { IconCalendarBolt } from '@tabler/icons-react';
 
 const DatePicker = () => {
-  const { selectedDate, setSelectedDate } = useDates();
+  const { selectedDate, setSelectedDate, setApiDate } = useDates();
 
   return (
     <DatePickerInput
@@ -13,7 +13,12 @@ const DatePicker = () => {
       firstDayOfWeek={0}
       size='sm'
       value={selectedDate}
-      onChange={setSelectedDate}
+      onChange={(value) => {
+        setSelectedDate(value);
+        if (value) {
+          setApiDate(value.toLocaleDateString('en-CA'));
+        }
+      }}
     />
   );
 };

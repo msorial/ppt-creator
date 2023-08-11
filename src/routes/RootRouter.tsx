@@ -12,7 +12,7 @@ const FaithfulLiturgy = lazy(() => import('../pages/FaithfulLiturgy'));
 const Communion = lazy(() => import('../pages/Communion'));
 
 const RootRouter = () => {
-  const { selectedDate } = useDates();
+  const { apiDate } = useDates();
 
   const Loading = (
     <Center sx={{ height: '100%', width: '100%' }}>
@@ -33,7 +33,7 @@ const RootRouter = () => {
       <Route
         path='vespers'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>
@@ -45,7 +45,7 @@ const RootRouter = () => {
       <Route
         path='matins'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>
@@ -57,7 +57,7 @@ const RootRouter = () => {
       <Route
         path='offering'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>
@@ -69,7 +69,7 @@ const RootRouter = () => {
       <Route
         path='liturgyofWord'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>
@@ -81,7 +81,7 @@ const RootRouter = () => {
       <Route
         path='liturgyofFaithful'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>
@@ -93,7 +93,7 @@ const RootRouter = () => {
       <Route
         path='communion'
         element={
-          selectedDate === null ? (
+          apiDate === null || '' ? (
             <Navigate to='/' />
           ) : (
             <Suspense fallback={Loading}>

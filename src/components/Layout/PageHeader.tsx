@@ -1,10 +1,9 @@
-import { ActionIcon, Burger, Flex, Header } from '@mantine/core';
-import { IconRefresh } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { Burger, Flex, Group, Header } from '@mantine/core';
+
+import ThemeToggle from '../Reusable/ThemeToggle';
+import RestartButton from '../Reusable/RestartButton';
 
 const PageHeader = () => {
-  const navigate = useNavigate();
-
   return (
     <Header
       height={{ base: 50, md: 70 }}
@@ -23,17 +22,10 @@ const PageHeader = () => {
       >
         <Burger opened={false} size='sm' />
 
-        <ActionIcon
-          variant='light'
-          color='dark'
-          sx={(theme) => ({
-            backgroundColor: theme.colors.gray[1],
-            color: theme.colors.blue[6],
-          })}
-          onClick={() => navigate('/')}
-        >
-          <IconRefresh size={16} stroke={1.5} />
-        </ActionIcon>
+        <Group>
+          <ThemeToggle />
+          <RestartButton />
+        </Group>
       </Flex>
     </Header>
   );

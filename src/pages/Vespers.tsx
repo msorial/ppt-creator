@@ -2,7 +2,6 @@ import {
   Checkbox,
   Flex,
   Group,
-  SegmentedControl,
   Stack,
   Text,
   useMantineTheme,
@@ -18,6 +17,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
+import SegControl from '../components/Reusable/SegControl';
 
 export interface VespersApiProps {
   Vespers: string;
@@ -52,7 +52,7 @@ const Vespers = () => {
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
-  const { selectedDate, setSelectedCopticDates } = useDates();
+  const { selectedDate, setSelectedCopticDates, apiDate } = useDates();
   const [vespersData, setVespersData] = useState<VespersApiProps | undefined>(
     undefined
   );
@@ -63,15 +63,17 @@ const Vespers = () => {
   });
 
   useEffect(() => {
-    // TODO: Make this date dynamic based off date chosen and deep linking??
-    fetch('http://192.81.219.24:5000/vespers?date=2023-08-27')
+    fetch('http://192.81.219.24:5000/vespers?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
-        setVesperOptions({
-          ...vesperOptions,
-          gospelLitany: data?.vespersLitanyofTheGospel,
-          fiveLitanies: data?.vespers5ShortLitanies,
-        });
+        if (data?.status !== 'No PPT For this date') {
+          setVesperOptions({
+            ...vesperOptions,
+            doxologies: data?.seasonVespersDoxologies,
+            gospelLitany: data?.vespersLitanyofTheGospel,
+            fiveLitanies: data?.vespers5ShortLitanies,
+          });
+        }
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -91,25 +93,23 @@ const Vespers = () => {
       });
   }, []);
 
-  console.log(vesperOptions);
-
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const item = event.target.value;
+    const value = event.target.value;
 
-    setVesperOptions((prevOptions) => {
-      if (prevOptions.doxologies.includes(item)) {
-        // Uncheck: Remove the item from the array
-        return {
-          ...prevOptions,
-          doxologies: prevOptions.doxologies.filter((value) => value !== item),
-        };
-      } else {
-        // Check: Add the item to the array
-        return {
-          ...prevOptions,
-          doxologies: [...prevOptions.doxologies, item],
-        };
-      }
+    setVesperOptions((prevOptions: any) => {
+      const newOptions = prevOptions.doxologies.includes(value)
+        ? prevOptions.doxologies.filter((item: any) => item !== value)
+        : [...prevOptions.doxologies, value];
+
+      // Sort the new options array based on the original order
+      const sortedOptions = vespersData?.seasonVespersDoxologies.filter(
+        (item) => newOptions.includes(item)
+      );
+
+      return {
+        ...prevOptions,
+        doxologies: sortedOptions,
+      };
     });
   };
 
@@ -122,10 +122,12 @@ const Vespers = () => {
     modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
     axios
-      .post('http://192.81.219.24:5000/vespers', modifiedVespersData)
+      .post(
+        'http://192.81.219.24:5000/vespers?date=' + apiDate,
+        modifiedVespersData
+      )
       .then(() => {
         navigate('/matins');
-        console.log('PPT Created');
       })
       .catch((error) => {
         console.error('Error submitting data:', error);
@@ -165,13 +167,11 @@ const Vespers = () => {
               <FormField
                 title='Bishop Present'
                 options={
-                  <SegmentedControl
+                  <SegControl
                     data={[
                       { label: 'No', value: 'ng' },
                       { label: 'Yes', value: 'yes' },
                     ]}
-                    sx={{ width: '100%' }}
-                    color='dark'
                   />
                 }
               />
@@ -183,7 +183,7 @@ const Vespers = () => {
 
                 {vespersData?.seasonVespersDoxologies
                   ? vespersData?.seasonVespersDoxologies.map(
-                      (item: any, index: any) => (
+                      (item: string, index: number) => (
                         <Checkbox
                           mt='sm'
                           key={index}
@@ -200,7 +200,7 @@ const Vespers = () => {
               <FormField
                 title='Litany of the Gospel'
                 options={
-                  <SegmentedControl
+                  <SegControl
                     data={[
                       { label: 'Alternate', value: 'alternate' },
                       { label: 'Standard', value: 'standard' },
@@ -212,8 +212,6 @@ const Vespers = () => {
                         gospelLitany: value,
                       })
                     }
-                    sx={{ width: '100%' }}
-                    color='dark'
                   />
                 }
               />
@@ -221,7 +219,7 @@ const Vespers = () => {
               <FormField
                 title='Five Short Litanies'
                 options={
-                  <SegmentedControl
+                  <SegControl
                     data={[
                       { label: 'No', value: 'no' },
                       { label: 'Yes', value: 'yes' },
@@ -233,8 +231,6 @@ const Vespers = () => {
                         fiveLitanies: value,
                       })
                     }
-                    sx={{ width: '100%' }}
-                    color='dark'
                   />
                 }
               />
