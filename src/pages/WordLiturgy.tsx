@@ -112,11 +112,8 @@ const WordLiturgy = () => {
   const handleSubmit = () => {
     // Modified Copy of Word Data to Post to API
     const modifiedWordData = { ...wordData };
-
     modifiedWordData.paralexHymns = wordOptions.paralex;
     modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
-
-    console.log(modifiedWordData);
 
     axios
       .post(

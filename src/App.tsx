@@ -61,7 +61,10 @@ function App() {
         }}
         header={<PageHeader />}
       >
-        <Container size='sm' sx={{ height: '100%' }}>
+        <Container
+          size='sm'
+          sx={{ height: '100%', paddingTop: '15px', paddingBottom: '30px' }}
+        >
           <RootRouter />
           <Notifications position='bottom-center' limit={1} />
         </Container>

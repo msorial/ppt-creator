@@ -1,16 +1,20 @@
-import { Burger, Flex, Group, Header } from '@mantine/core';
+import { Burger, Flex, Group, Header, useMantineTheme } from '@mantine/core';
 
 import ThemeToggle from '../Reusable/ThemeToggle';
 import RestartButton from '../Reusable/RestartButton';
+import { useMediaQuery } from '@mantine/hooks';
 
 const PageHeader = () => {
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+
   return (
     <Header
-      height={{ base: 50, md: 70 }}
-      p='lg'
+      height={{ base: 75 }}
+      p={!isMobile ? 'lg' : 'xl'}
       sx={{
-        backgroundColor: 'transparent',
-        borderBottom: 'none',
+        backgroundColor: !isMobile ? 'transparent' : '',
+        borderBottom: !isMobile ? 'none' : '',
       }}
     >
       <Flex
@@ -20,7 +24,7 @@ const PageHeader = () => {
         direction='row'
         wrap='nowrap'
       >
-        <Burger opened={false} size='sm' />
+        {isMobile && <Burger opened={false} size='sm' />}
 
         <Group>
           <ThemeToggle />

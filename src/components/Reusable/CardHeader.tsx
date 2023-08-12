@@ -9,7 +9,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ header }) => {
     <Title
       order={3}
       variant='gradient'
-      gradient={{ from: '#373B44', to: '#4286f4', deg: 45 }}
+      gradient={{ from: '#4286f4', to: '#0083B0', deg: 45 }}
       ta='center'
     >
       {header}

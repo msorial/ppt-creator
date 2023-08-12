@@ -21,7 +21,7 @@ const FormCard: React.FC<FormCardProps> = ({ content }) => {
     matins: 33.334,
     offering: 50,
     liturgyofWord: 66.668,
-    liturgyofFaithful: 83.335,
+    liturgyOfFaithful: 83.335,
     communion: 100,
   };
 

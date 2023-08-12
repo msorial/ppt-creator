@@ -119,7 +119,6 @@ const Vespers = () => {
   const handleSubmit = () => {
     // Modified Copy of Vespers Data to Post to API
     const modifiedVespersData = { ...vespersData };
-
     modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
     modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
     modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;

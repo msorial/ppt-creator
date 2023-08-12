@@ -182,6 +182,7 @@ const Matins = () => {
                         handleChange('thirdHourPsalms', value)
                       }
                       data={psalmsObject.thirdHourPsalms}
+                      sx={{ width: '100%' }}
                     />
                   )
                 }
@@ -203,6 +204,7 @@ const Matins = () => {
                         handleChange('sixthHourPsalms', value)
                       }
                       data={psalmsObject.sixthHourPsalms}
+                      sx={{ width: '100%' }}
                     />
                   )
                 }

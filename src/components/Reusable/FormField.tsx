@@ -8,7 +8,7 @@ interface FormFieldProps {
 
 const FormField: React.FC<FormFieldProps> = ({ title, options }) => {
   return (
-    <Stack align='flex-start' spacing={5}>
+    <Stack align='flex-start' spacing={5} sx={{ width: '100%' }}>
       <Text fz='md' fw={500}>
         {title}
       </Text>

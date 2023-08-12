@@ -119,7 +119,6 @@ const Matins = () => {
   const handleSubmit = () => {
     // Modified Copy of Matins Data to Post to API
     const modifiedMatinsData = { ...matinsData };
-
     modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
     modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
     modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
