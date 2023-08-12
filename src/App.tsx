@@ -5,30 +5,30 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import RootRouter from './routes/RootRouter';
-import { useSearchParams } from 'react-router-dom';
 import { Notifications } from '@mantine/notifications';
 import PageHeader from './components/Layout/PageHeader';
 import useUi from './store/useUi';
+import { useSearchParamsState } from './lib/hooks/useSearchParams';
 import useDates from './store/useDates';
 import { useEffect } from 'react';
 
 function App() {
   const theme = useMantineTheme();
   const { darkMode } = useUi();
-  const { setApiDate, apiDate } = useDates();
 
-  const [searchParams] = useSearchParams();
-  const dateQueryParam: string | null | undefined = searchParams.get('date');
-  // Will be null if no ?date given
-  // Will be '' if date given but no YYYY-MM-DD given
+  const { setApiDate, apiDate } = useDates();
+  const [searchParamState, setSearchParamState] = useSearchParamsState(
+    'date',
+    ''
+  );
 
   useEffect(() => {
-    if (dateQueryParam !== null && dateQueryParam !== '') {
-      setApiDate(dateQueryParam);
-    } else {
-      setApiDate(null);
+    if (apiDate !== undefined && searchParamState === '') {
+      setSearchParamState(apiDate);
+    } else if (apiDate === undefined && searchParamState !== '') {
+      setApiDate(searchParamState);
     }
-  }, [dateQueryParam]);
+  }, [searchParamState]);
 
   return (
     <MantineProvider

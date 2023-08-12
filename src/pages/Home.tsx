@@ -12,8 +12,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { IconAlertCircle } from '@tabler/icons-react';
 
 const Home = () => {
-  const { currentCopticDates, selectedDate, apiDate, setCurrentCopticDates } =
-    useDates();
+  const { currentCopticDates, apiDate, setCurrentCopticDates } = useDates();
   const navigate = useNavigate();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -31,7 +30,7 @@ const Home = () => {
   }, []);
 
   const handleSubmit = () => {
-    if (selectedDate !== null) {
+    if (apiDate !== undefined) {
       axios
         .post('http://192.81.219.24:8080/date?date=' + apiDate)
         .then(() => {

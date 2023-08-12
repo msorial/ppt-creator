@@ -7,7 +7,7 @@ import useDates from '../../store/useDates';
 const RestartButton: React.FC = () => {
   const navigate = useNavigate();
   const { darkMode } = useUi();
-  const { setSelectedDate } = useDates();
+  const { setApiDate } = useDates();
 
   return (
     <Tooltip label='Restart' position='bottom' withArrow>
@@ -27,7 +27,7 @@ const RestartButton: React.FC = () => {
         })}
         onClick={() => {
           navigate('/');
-          setSelectedDate(null);
+          setApiDate(undefined);
         }}
       >
         <IconRefresh size={16} stroke={1.5} />

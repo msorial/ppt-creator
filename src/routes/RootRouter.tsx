@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react';
 import { Center, Loader } from '@mantine/core';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import useDates from '../store/useDates';
+import { useSearchParamsState } from '../lib/hooks/useSearchParams';
+import DelayedRender from './DelayedRender';
 
 const Home = lazy(() => import('../pages/Home'));
 const Vespers = lazy(() => import('../pages/Vespers'));
@@ -33,73 +35,61 @@ const RootRouter = () => {
       <Route
         path='vespers'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <Vespers />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
       <Route
         path='matins'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <Matins />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
       <Route
         path='offering'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <Offering />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
       <Route
         path='liturgyofWord'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <WordLiturgy />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
       <Route
         path='liturgyofFaithful'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <FaithfulLiturgy />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
       <Route
         path='communion'
         element={
-          apiDate === null || '' ? (
-            <Navigate to='/' />
-          ) : (
+          <DelayedRender condition={apiDate === undefined}>
             <Suspense fallback={Loading}>
               <Communion />
             </Suspense>
-          )
+          </DelayedRender>
         }
       />
     </Routes>

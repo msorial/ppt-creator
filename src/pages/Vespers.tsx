@@ -10,7 +10,7 @@ import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
@@ -18,6 +18,9 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
+import ReadableDate from '../components/Reusable/ReadableDate';
+import { useSearchParamsState } from '../lib/hooks/useSearchParams';
+import { DateValue } from '@mantine/dates';
 
 export interface VespersApiProps {
   Vespers: string;
@@ -43,7 +46,7 @@ export interface VespersApiProps {
 
 interface VespersOptionsProps {
   doxologies: string[];
-  gospelLitany: string | undefined;
+  gospelLitany: string;
   fiveLitanies: string;
 }
 
@@ -52,7 +55,7 @@ const Vespers = () => {
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
-  const { selectedDate, setSelectedCopticDates, apiDate } = useDates();
+  const { apiDate, setSelectedCopticDates } = useDates();
   const [vespersData, setVespersData] = useState<VespersApiProps | undefined>(
     undefined
   );
@@ -127,7 +130,7 @@ const Vespers = () => {
         modifiedVespersData
       )
       .then(() => {
-        navigate('/matins');
+        navigate(`/matins`);
       })
       .catch((error) => {
         console.error('Error submitting data:', error);
@@ -148,9 +151,7 @@ const Vespers = () => {
           <Text align='left' fw={500}>
             Selected Date
           </Text>
-          <Text align='right' fs='italic'>
-            {selectedDate?.toLocaleDateString()}
-          </Text>
+          <ReadableDate />
         </Flex>
       }
       form={
