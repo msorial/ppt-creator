@@ -2,6 +2,7 @@ import {
   Checkbox,
   Flex,
   Group,
+  Skeleton,
   Stack,
   Text,
   useMantineTheme,
@@ -63,6 +64,7 @@ const Matins = () => {
     fiveLitanies: 'no',
   });
 
+  // This useEffect returns selections previously made
   useEffect(() => {
     fetch('http://192.81.219.24:5000/matins?date=' + apiDate)
       .then((response) => response.json())
@@ -81,9 +83,9 @@ const Matins = () => {
       });
   }, []);
 
-  // This useEffect gives me the Doxology options for that given date
+  // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('http://192.81.219.24:8080/matins')
+    fetch('http://192.81.219.24:8080/matins?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -116,16 +118,16 @@ const Matins = () => {
 
   const handleSubmit = () => {
     // Modified Copy of Matins Data to Post to API
-    const modifiedmatinsData = { ...matinsData };
+    const modifiedMatinsData = { ...matinsData };
 
-    modifiedmatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
-    modifiedmatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
-    modifiedmatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
+    modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
+    modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
+    modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
 
     axios
       .post(
         'http://192.81.219.24:5000/matins?date=' + apiDate,
-        modifiedmatinsData
+        modifiedMatinsData
       )
       .then(() => {
         navigate('/offering');
@@ -193,7 +195,15 @@ const Matins = () => {
                         />
                       )
                     )
-                  : null}
+                  : [1, 2, 3, 4].map((index: number) => (
+                      <Skeleton
+                        height={20}
+                        mt={5}
+                        width={Math.floor(Math.random() * (100 - 75 + 1)) + 75}
+                        radius='md'
+                        key={index}
+                      />
+                    ))}
               </Stack>
 
               <FormField

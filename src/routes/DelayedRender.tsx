@@ -1,3 +1,4 @@
+import { Center, Loader } from '@mantine/core';
 import { useState, useEffect, ReactNode } from 'react';
 
 interface DelayedRenderProps {
@@ -19,7 +20,13 @@ const DelayedRender: React.FC<DelayedRenderProps> = ({
     return () => clearTimeout(timeout);
   }, []);
 
-  return condition || showContent ? children : null;
+  return condition || showContent ? (
+    children
+  ) : (
+    <Center sx={{ height: '100%', width: '100%' }}>
+      <Loader color='blue' variant='oval' />
+    </Center>
+  );
 };
 
 export default DelayedRender;

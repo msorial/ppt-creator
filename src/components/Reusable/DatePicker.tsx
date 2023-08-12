@@ -1,6 +1,7 @@
-import { DatePickerInput, DateValue } from '@mantine/dates';
-import useDates from '../../store/useDates';
+import { DatePickerInput } from '@mantine/dates';
 import { IconCalendarBolt } from '@tabler/icons-react';
+import moment from 'moment'; // Import Moment.js
+import useDates from '../../store/useDates';
 import { useSearchParamsState } from '../../lib/hooks/useSearchParams';
 
 const DatePicker = () => {
@@ -10,11 +11,11 @@ const DatePicker = () => {
     ''
   );
 
-  const dateObject: DateValue | undefined = apiDate
-    ? new Date(`${apiDate} 00:00:00 GMT-0400 (Eastern Daylight Time)`)
+  const dateObject = apiDate
+    ? moment(`${apiDate} 00:00:00`, 'YYYY-MM-DD HH:mm:ss')
     : undefined;
-  const searchDateObject: DateValue | undefined = searchParamState
-    ? new Date(`${searchParamState} 00:00:00 GMT-0400 (Eastern Daylight Time)`)
+  const searchDateObject = searchParamState
+    ? moment(`${searchParamState} 00:00:00`, 'YYYY-MM-DD HH:mm:ss')
     : undefined;
 
   const handleParamChange = (date: string) => {
@@ -28,13 +29,11 @@ const DatePicker = () => {
       label='Choose a Date to Generate PowerPoint'
       firstDayOfWeek={0}
       size='sm'
-      value={searchDateObject ? searchDateObject : dateObject}
-      onChange={(value: Date) => {
-        const year = value.getUTCFullYear();
-        const month = String(value.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(value.getUTCDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-
+      value={
+        searchDateObject ? searchDateObject.toDate() : dateObject?.toDate()
+      }
+      onChange={(value) => {
+        const formattedDate = moment(value).format('YYYY-MM-DD');
         setApiDate(formattedDate);
         handleParamChange(formattedDate);
       }}

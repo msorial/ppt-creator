@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Center, Loader } from '@mantine/core';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import useDates from '../store/useDates';
-import { useSearchParamsState } from '../lib/hooks/useSearchParams';
 import DelayedRender from './DelayedRender';
 
 const Home = lazy(() => import('../pages/Home'));

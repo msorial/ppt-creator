@@ -1,18 +1,15 @@
 import { Flex, Group, Stack, Text, useMantineTheme } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import NextButton from '../components/Reusable/NextButton';
 import DatePicker from '../components/Reusable/DatePicker';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconAlertCircle } from '@tabler/icons-react';
 
 const Home = () => {
-  const { currentCopticDates, apiDate, setCurrentCopticDates } = useDates();
+  const { currentCopticDates, setCurrentCopticDates } = useDates();
   const navigate = useNavigate();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -28,27 +25,6 @@ const Home = () => {
         console.error('Error fetching API data:', error);
       });
   }, []);
-
-  const handleSubmit = () => {
-    if (apiDate !== undefined) {
-      axios
-        .post('http://192.81.219.24:8080/date?date=' + apiDate)
-        .then(() => {
-          navigate('/vespers');
-        })
-        .catch((error) => {
-          console.error('Error submitting data:', error);
-        });
-    } else
-      notifications.show({
-        withCloseButton: true,
-        autoClose: 5000,
-        title: 'Select Date',
-        message: 'Date must be selected to generate powerpoint',
-        color: 'red',
-        icon: <IconAlertCircle />,
-      });
-  };
 
   return (
     <PageLayout
@@ -77,7 +53,7 @@ const Home = () => {
       form={<FormCard content={<DatePicker />} />}
       footer={
         <Group>
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={() => navigate('/vespers')} />
         </Group>
       }
     />

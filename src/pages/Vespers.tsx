@@ -2,6 +2,7 @@ import {
   Checkbox,
   Flex,
   Group,
+  Skeleton,
   Stack,
   Text,
   useMantineTheme,
@@ -10,7 +11,7 @@ import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
@@ -19,8 +20,6 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import ReadableDate from '../components/Reusable/ReadableDate';
-import { useSearchParamsState } from '../lib/hooks/useSearchParams';
-import { DateValue } from '@mantine/dates';
 
 export interface VespersApiProps {
   Vespers: string;
@@ -65,6 +64,7 @@ const Vespers = () => {
     fiveLitanies: 'no',
   });
 
+  // This useEffect returns selections previously made
   useEffect(() => {
     fetch('http://192.81.219.24:5000/vespers?date=' + apiDate)
       .then((response) => response.json())
@@ -83,9 +83,9 @@ const Vespers = () => {
       });
   }, []);
 
-  // This useEffect gives me the Doxology options for that given date
+  // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('http://192.81.219.24:8080/vespers')
+    fetch('http://192.81.219.24:8080/vespers?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -195,7 +195,15 @@ const Vespers = () => {
                         />
                       )
                     )
-                  : null}
+                  : [1, 2, 3, 4].map((index: number) => (
+                      <Skeleton
+                        height={20}
+                        mt={5}
+                        width={Math.floor(Math.random() * (100 - 75 + 1)) + 75}
+                        radius='md'
+                        key={index}
+                      />
+                    ))}
               </Stack>
 
               <FormField
