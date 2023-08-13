@@ -114,7 +114,7 @@ const WordLiturgy = () => {
     const modifiedWordData = { ...wordData };
     modifiedWordData.paralexHymns = wordOptions.paralex;
     modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
-
+    console.log(modifiedWordData);
     axios
       .post(
         'http://192.81.219.24:5000/liturgyOfWord?date=' + apiDate,
