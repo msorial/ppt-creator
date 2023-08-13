@@ -60,7 +60,7 @@ const Matins = () => {
   );
   const [matinsOptions, setMatinsOptions] = useState<MatinsOptionsProps>({
     doxologies: [],
-    gospelLitany: 'alternate',
+    gospelLitany: 'standard',
     fiveLitanies: 'no',
   });
 
@@ -210,8 +210,8 @@ const Matins = () => {
                 options={
                   <SegControl
                     data={[
-                      { label: 'Alternate', value: 'alternate' },
                       { label: 'Standard', value: 'standard' },
+                      { label: 'Alternate', value: 'alternate' },
                     ]}
                     value={matinsOptions.gospelLitany}
                     onChange={(value: string) =>

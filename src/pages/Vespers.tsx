@@ -60,7 +60,7 @@ const Vespers = () => {
   );
   const [vesperOptions, setVesperOptions] = useState<VespersOptionsProps>({
     doxologies: [],
-    gospelLitany: 'alternate',
+    gospelLitany: 'standard',
     fiveLitanies: 'no',
   });
 
@@ -210,8 +210,8 @@ const Vespers = () => {
                 options={
                   <SegControl
                     data={[
-                      { label: 'Alternate', value: 'alternate' },
                       { label: 'Standard', value: 'standard' },
+                      { label: 'Alternate', value: 'alternate' },
                     ]}
                     value={vesperOptions.gospelLitany}
                     onChange={(value: string) =>
