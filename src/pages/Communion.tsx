@@ -111,14 +111,15 @@ const Communion = () => {
     modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
     modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
 
+    axios.post(
+      'http://192.81.219.24:5000/communion?date=' + apiDate,
+      modifiedCommunionData
+    );
+
     axios
-      .post(
-        'http://192.81.219.24:5000/communion?date=' + apiDate,
-        modifiedCommunionData
-      )
+      .post('http://192.81.219.24:5000/makeppt?date=' + apiDate)
       .then(() => {
-        // TODO: Create a complete page
-        navigate(`/`);
+        navigate('/');
       })
       .catch((error) => {
         console.error('Error submitting data:', error);
@@ -223,8 +224,7 @@ const Communion = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
-          <NextButton onClick={handleSubmit} />
-          <SubmitButton />
+          <SubmitButton onClick={handleSubmit} />
         </Group>
       }
     />

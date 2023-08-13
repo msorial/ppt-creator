@@ -1,4 +1,4 @@
-import { Flex, Group, Stack, Text, useMantineTheme } from '@mantine/core';
+import { Flex, Stack, Text, useMantineTheme } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import DatePicker from '../components/Reusable/DatePicker';
 import FormCard from '../components/Reusable/FormCard';
@@ -7,9 +7,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useDates from '../store/useDates';
 import { useMediaQuery } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 const Home = () => {
-  const { currentCopticDates, setCurrentCopticDates } = useDates();
+  const { currentCopticDates, apiDate, setCurrentCopticDates } = useDates();
   const navigate = useNavigate();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -25,6 +27,22 @@ const Home = () => {
         console.error('Error fetching API data:', error);
       });
   }, []);
+
+  console.log(apiDate);
+
+  const handleSubmit = () => {
+    if (apiDate !== undefined) {
+      navigate('/vespers');
+    } else
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 5000,
+        title: 'Select Date',
+        message: 'Date must be selected to generate powerpoint',
+        color: 'red',
+        icon: <IconAlertCircle />,
+      });
+  };
 
   return (
     <PageLayout
@@ -45,17 +63,12 @@ const Home = () => {
           </Stack>
 
           <Stack justify='flex-end' spacing='xs'>
-            {/* <Text align='right'>{currentCopticDates.ocassion}</Text> */}
             <Text align='right'>{currentCopticDates?.season}</Text>
           </Stack>
         </Flex>
       }
       form={<FormCard content={<DatePicker />} />}
-      footer={
-        <Group>
-          <NextButton onClick={() => navigate('/vespers')} />
-        </Group>
-      }
+      footer={<NextButton onClick={handleSubmit} />}
     />
   );
 };

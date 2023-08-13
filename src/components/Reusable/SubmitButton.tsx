@@ -1,30 +1,14 @@
 import { Button } from '@mantine/core';
 import { IconSend } from '@tabler/icons-react';
-import axios from 'axios';
-import useDates from '../../store/useDates';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-const SubmitButton = () => {
-  const navigate = useNavigate();
-  const { apiDate } = useDates();
+interface SubmitButtonProps {
+  onClick?: () => void;
+}
 
-  const handleSubmit = () => {
-    axios
-      .post('http://192.81.219.24:5000/makeppt?date=' + apiDate)
-      .then(() => {
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
-      });
-  };
-
+const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick }) => {
   return (
-    <Button
-      onClick={handleSubmit}
-      rightIcon={<IconSend size={14} />}
-      color='dark'
-    >
+    <Button onClick={onClick} rightIcon={<IconSend size={14} />} color='dark'>
       Submit
     </Button>
   );
