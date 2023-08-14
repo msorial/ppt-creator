@@ -53,7 +53,7 @@ const Communion = () => {
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('http://192.81.219.24:5000/communion?date=' + apiDate)
+    fetch('https://192.81.219.24:5000/communion?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         if (data?.status !== 'No PPT For this date') {
@@ -71,7 +71,7 @@ const Communion = () => {
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('http://192.81.219.24:8080/communion?date=' + apiDate)
+    fetch('https://192.81.219.24:8080/communion?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -112,12 +112,12 @@ const Communion = () => {
     modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
 
     axios.post(
-      'http://192.81.219.24:5000/communion?date=' + apiDate,
+      'https://192.81.219.24:5000/communion?date=' + apiDate,
       modifiedCommunionData
     );
 
     axios
-      .post('http://192.81.219.24:5000/makeppt?date=' + apiDate)
+      .post('https://192.81.219.24:5000/makeppt?date=' + apiDate)
       .then(() => {
         navigate('/');
       })

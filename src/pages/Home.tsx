@@ -18,7 +18,7 @@ const Home = () => {
 
   useEffect(() => {
     // Fetches the Date Information on Mount and sets it in Global State
-    fetch('http://192.81.219.24:8080/home')
+    fetch('https://192.81.219.24:8080/home')
       .then((response) => response.json())
       .then((data) => {
         setCurrentCopticDates(data);

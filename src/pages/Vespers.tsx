@@ -66,7 +66,7 @@ const Vespers = () => {
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('http://192.81.219.24:5000/vespers?date=' + apiDate)
+    fetch('https://192.81.219.24:5000/vespers?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         if (data?.status !== 'No PPT For this date') {
@@ -85,7 +85,7 @@ const Vespers = () => {
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('http://192.81.219.24:8080/vespers?date=' + apiDate)
+    fetch('https://192.81.219.24:8080/vespers?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -125,7 +125,7 @@ const Vespers = () => {
 
     axios
       .post(
-        'http://192.81.219.24:5000/vespers?date=' + apiDate,
+        'https://192.81.219.24:5000/vespers?date=' + apiDate,
         modifiedVespersData
       )
       .then(() => {
