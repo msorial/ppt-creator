@@ -7,7 +7,6 @@ import {
   Text,
   useMantineTheme,
 } from '@mantine/core';
-import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect, useState } from 'react';
