@@ -69,7 +69,7 @@ const Matins = () => {
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('https://192.81.219.24:5000/offering?date=' + apiDate)
+    fetch('https://stmarkapi.com:5000/offering?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         if (data?.status !== 'No PPT For this date') {
@@ -87,7 +87,7 @@ const Matins = () => {
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('https://192.81.219.24:8080/offering?date=' + apiDate)
+    fetch('https://stmarkapi.com:8080/offering?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -127,7 +127,7 @@ const Matins = () => {
 
     axios
       .post(
-        'https://192.81.219.24:5000/offering?date=' + apiDate,
+        'https://stmarkapi.com:5000/offering?date=' + apiDate,
         modifiedOfferingData
       )
       .then(() => {

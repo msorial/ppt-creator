@@ -110,7 +110,7 @@ const FaithfulLiturgy = () => {
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('https://192.81.219.24:5000/liturgyOfFaithful?date=' + apiDate)
+    fetch('https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         if (data?.status !== 'No PPT For this date') {
@@ -141,7 +141,7 @@ const FaithfulLiturgy = () => {
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('https://192.81.219.24:8080/liturgyOfFaithful?date=' + apiDate)
+    fetch('https://stmarkapi.com:8080/liturgyOfFaithful?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -203,7 +203,7 @@ const FaithfulLiturgy = () => {
 
     axios
       .post(
-        'https://192.81.219.24:5000/liturgyOfFaithful?date=' + apiDate,
+        'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
         modifiedFaithfulData
       )
       .then(() => {
