@@ -11,11 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
-import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
-import { notifications } from '@mantine/notifications';
 
-// TODO: Check if one is filled for fraction, one will always be empty
-
+// TODO: HasEmptyValues Revamp
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
   inTheWisdomOfGod: string;

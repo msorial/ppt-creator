@@ -13,7 +13,6 @@ import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
 import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle } from '@tabler/icons-react';
 
 export interface VespersApiProps {
   Vespers: string;
