@@ -1,12 +1,4 @@
-import {
-  Checkbox,
-  Flex,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
@@ -14,12 +6,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
-import ReadableDate from '../components/Reusable/ReadableDate';
+import FormHeader from '../components/Reusable/FormHeader';
 
 export interface WordLiturgyApiProps {
   hymnOfCenser: string;
@@ -46,8 +37,6 @@ interface WordLiturgyOptionsProps {
 
 const WordLiturgy = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const { apiDate, setSelectedCopticDates } = useDates();
   const [wordData, setWordData] = useState<WordLiturgyApiProps | undefined>(
@@ -130,21 +119,7 @@ const WordLiturgy = () => {
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={

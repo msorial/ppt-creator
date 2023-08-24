@@ -1,11 +1,4 @@
-import {
-  Flex,
-  Group,
-  Select,
-  Skeleton,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Flex, Group, Select, Skeleton } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
@@ -13,11 +6,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
-import ReadableDate from '../components/Reusable/ReadableDate';
+import FormHeader from '../components/Reusable/FormHeader';
 
 export interface OfferingApiProps {
   transitionSlide: string;
@@ -50,8 +42,6 @@ interface PsalmsObjectProps {
 
 const Matins = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const { apiDate, setSelectedCopticDates } = useDates();
   const [psalmsObject, setPsalmsObject] = useState<PsalmsObjectProps>({
@@ -120,7 +110,7 @@ const Matins = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Matins Data to Post to API
+    // Modified Copy of Offering Data to Post to API
     const modifiedOfferingData = { ...offeringData };
     modifiedOfferingData.thirdHourPsalms = [offeringOptions.thirdHourPsalms];
     modifiedOfferingData.sixthHourPsalms = [offeringOptions.sixthHourPsalms];
@@ -140,21 +130,7 @@ const Matins = () => {
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={

@@ -26,9 +26,9 @@ const PageHeader = () => {
       >
         {isMobile && <Burger opened={false} size='sm' />}
 
-        <Group>
-          <ThemeToggle />
+        <Group spacing='xs'>
           <RestartButton />
+          <ThemeToggle />
         </Group>
       </Flex>
     </Header>
