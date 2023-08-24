@@ -4,6 +4,7 @@ import {
   Flex,
   Group,
   Header,
+  Tooltip,
   useMantineTheme,
 } from '@mantine/core';
 
@@ -12,6 +13,7 @@ import RestartButton from '../Reusable/RestartButton';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconDotsVertical } from '@tabler/icons-react';
 import useUi from '../../store/useUi';
+import JumpButton from '../Reusable/JumpButton';
 
 const PageHeader = () => {
   const theme = useMantineTheme();
@@ -38,9 +40,7 @@ const PageHeader = () => {
         direction='row'
         wrap='nowrap'
       >
-        <ActionIcon color='blue' variant='light'>
-          <IconDotsVertical size={16} stroke={1.5} />
-        </ActionIcon>
+        <JumpButton />
 
         <Group spacing='xs'>
           <RestartButton />
