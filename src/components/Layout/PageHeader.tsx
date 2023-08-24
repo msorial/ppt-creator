@@ -1,17 +1,8 @@
-import {
-  ActionIcon,
-  Burger,
-  Flex,
-  Group,
-  Header,
-  Tooltip,
-  useMantineTheme,
-} from '@mantine/core';
+import { Flex, Group, Header, useMantineTheme } from '@mantine/core';
 
 import ThemeToggle from '../Reusable/ThemeToggle';
 import RestartButton from '../Reusable/RestartButton';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconDotsVertical } from '@tabler/icons-react';
 import useUi from '../../store/useUi';
 import JumpButton from '../Reusable/JumpButton';
 
