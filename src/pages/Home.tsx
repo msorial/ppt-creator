@@ -37,7 +37,6 @@ const Home = () => {
       notifications.show({
         withCloseButton: true,
         autoClose: 5000,
-        title: 'Select Date',
         message: 'Date must be selected to generate powerpoint',
         color: 'red',
         icon: <IconAlertCircle />,

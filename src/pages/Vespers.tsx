@@ -11,6 +11,9 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
+import { notifications } from '@mantine/notifications';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 export interface VespersApiProps {
   Vespers: string;
@@ -108,23 +111,33 @@ const Vespers = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Vespers Data to Post to API
-    const modifiedVespersData = { ...vespersData };
-    modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
-    modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
-    modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/vespers?date=' + apiDate,
-        modifiedVespersData
-      )
-      .then(() => {
-        navigate(`/matins`);
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    // Check if doxologies, gospelLitany, or fiveLitanies are empty
+    if (hasEmptyValues(vesperOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Vespers Data to Post to API
+      const modifiedVespersData = { ...vespersData };
+      modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
+      modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
+      modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/vespers?date=' + apiDate,
+          modifiedVespersData
+        )
+        .then(() => {
+          navigate(`/matins`);
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (
@@ -168,6 +181,7 @@ const Vespers = () => {
                           checked={vesperOptions.doxologies.includes(item)}
                           onChange={handleCheckboxChange}
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )

@@ -11,6 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
+import { notifications } from '@mantine/notifications';
 
 export interface MatinsApiProps {
   Matins: string;
@@ -108,23 +110,32 @@ const Matins = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Matins Data to Post to API
-    const modifiedMatinsData = { ...matinsData };
-    modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
-    modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
-    modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/matins?date=' + apiDate,
-        modifiedMatinsData
-      )
-      .then(() => {
-        navigate('/offering');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (hasEmptyValues(matinsOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Matins Data to Post to API
+      const modifiedMatinsData = { ...matinsData };
+      modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
+      modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
+      modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/matins?date=' + apiDate,
+          modifiedMatinsData
+        )
+        .then(() => {
+          navigate('/offering');
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (

@@ -9,6 +9,8 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import SubmitButton from '../components/Reusable/SubmitButton';
 import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -96,24 +98,33 @@ const Communion = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Communion Data to Post to API
-    const modifiedCommunionData = { ...communionData };
-    modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
-    modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
-
-    axios.post(
-      'https://stmarkapi.com:5000/communion?date=' + apiDate,
-      modifiedCommunionData
-    );
-
-    axios
-      .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
-      .then(() => {
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (hasEmptyValues(communionOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Communion Data to Post to API
+      const modifiedCommunionData = { ...communionData };
+      modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+      modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+      axios.post(
+        'https://stmarkapi.com:5000/communion?date=' + apiDate,
+        modifiedCommunionData
+      );
+
+      axios
+        .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+        .then(() => {
+          navigate('/');
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (

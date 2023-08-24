@@ -11,6 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
 
 export interface WordLiturgyApiProps {
   hymnOfCenser: string;
@@ -101,22 +103,31 @@ const WordLiturgy = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Word Data to Post to API
-    const modifiedWordData = { ...wordData };
-    modifiedWordData.paralexHymns = wordOptions.paralex;
-    modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
-    console.log(modifiedWordData);
-    axios
-      .post(
-        'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
-        modifiedWordData
-      )
-      .then(() => {
-        navigate(`/liturgyOfFaithful`);
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (hasEmptyValues(wordOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Word Data to Post to API
+      const modifiedWordData = { ...wordData };
+      modifiedWordData.paralexHymns = wordOptions.paralex;
+      modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
+      console.log(modifiedWordData);
+      axios
+        .post(
+          'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
+          modifiedWordData
+        )
+        .then(() => {
+          navigate(`/liturgyOfFaithful`);
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (

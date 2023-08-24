@@ -11,6 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
+import { notifications } from '@mantine/notifications';
 
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
@@ -172,37 +174,50 @@ const FaithfulLiturgy = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Faithful Data to Post to API
-    const modifiedFaithfulData = { ...faithfulData };
-    modifiedFaithfulData.Liturgy3GreatLitanies = faithfulOptions.threeLitanies;
-    modifiedFaithfulData.prayerOfReconcilation = [
-      faithfulOptions.reconcilePrayer,
-    ];
-    modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
-    modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
-    modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
-    modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
-    modifiedFaithfulData.instiution = faithfulOptions.instiution;
-    modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
-    modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
-    modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
-    modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
-    modifiedFaithfulData.postCommemoration = faithfulOptions.postCommemoration;
-    modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
-    modifiedFaithfulData.seasonalFraction = [faithfulOptions.seasonalFraction];
-    modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
-        modifiedFaithfulData
-      )
-      .then(() => {
-        navigate(`/communion`);
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (hasEmptyValues(faithfulData)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Faithful Data to Post to API
+      const modifiedFaithfulData = { ...faithfulData };
+      modifiedFaithfulData.Liturgy3GreatLitanies =
+        faithfulOptions.threeLitanies;
+      modifiedFaithfulData.prayerOfReconcilation = [
+        faithfulOptions.reconcilePrayer,
+      ];
+      modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
+      modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
+      modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
+      modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
+      modifiedFaithfulData.instiution = faithfulOptions.instiution;
+      modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
+      modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
+      modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
+      modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
+      modifiedFaithfulData.postCommemoration =
+        faithfulOptions.postCommemoration;
+      modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
+      modifiedFaithfulData.seasonalFraction = [
+        faithfulOptions.seasonalFraction,
+      ];
+      modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
+          modifiedFaithfulData
+        )
+        .then(() => {
+          navigate(`/communion`);
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (
