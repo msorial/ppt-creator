@@ -10,8 +10,6 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import FormHeader from '../components/Reusable/FormHeader';
-import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
-import { notifications } from '@mantine/notifications';
 
 export interface OfferingApiProps {
   transitionSlide: string;
@@ -113,31 +111,22 @@ const Matins = () => {
   };
 
   const handleSubmit = () => {
-    if (hasEmptyValues(offeringOptions)) {
-      notifications.show({
-        withCloseButton: true,
-        autoClose: 2000,
-        message: 'Please fill in all options',
-        color: 'red',
-      });
-    } else {
-      // Modified Copy of Offering Data to Post to API
-      const modifiedOfferingData = { ...offeringData };
-      modifiedOfferingData.thirdHourPsalms = [offeringOptions.thirdHourPsalms];
-      modifiedOfferingData.sixthHourPsalms = [offeringOptions.sixthHourPsalms];
+    // Modified Copy of Offering Data to Post to API
+    const modifiedOfferingData = { ...offeringData };
+    modifiedOfferingData.thirdHourPsalms = [offeringOptions.thirdHourPsalms];
+    modifiedOfferingData.sixthHourPsalms = [offeringOptions.sixthHourPsalms];
 
-      axios
-        .post(
-          'https://stmarkapi.com:5000/offering?date=' + apiDate,
-          modifiedOfferingData
-        )
-        .then(() => {
-          navigate('/liturgyofWord');
-        })
-        .catch((error) => {
-          console.error('Error submitting data:', error);
-        });
-    }
+    axios
+      .post(
+        'https://stmarkapi.com:5000/offering?date=' + apiDate,
+        modifiedOfferingData
+      )
+      .then(() => {
+        navigate('/liturgyofWord');
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
   };
 
   return (

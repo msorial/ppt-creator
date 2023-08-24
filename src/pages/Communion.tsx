@@ -119,7 +119,7 @@ const Communion = () => {
       axios
         .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
         .then(() => {
-          navigate('/');
+          navigate('/success');
         })
         .catch((error) => {
           console.error('Error submitting data:', error);
