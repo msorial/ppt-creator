@@ -96,6 +96,7 @@ const FaithfulLiturgy = () => {
       seasonalFraction: '',
       standardFraction: '',
     });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -135,6 +136,7 @@ const FaithfulLiturgy = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setFaithfulData(data[1]);
+        setDisabled(false);
 
         setFractionObject({
           seasonalFractions: data[1].seasonalFraction.map((path: string) => ({
@@ -527,7 +529,7 @@ const FaithfulLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyofWord')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

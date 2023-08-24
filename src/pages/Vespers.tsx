@@ -52,6 +52,7 @@ const Vespers = () => {
     gospelLitany: 'standard',
     fiveLitanies: 'no',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -79,6 +80,7 @@ const Vespers = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setVespersData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -224,7 +226,7 @@ const Vespers = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

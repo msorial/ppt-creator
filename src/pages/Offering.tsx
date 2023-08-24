@@ -51,11 +51,11 @@ const Matins = () => {
   const [offeringData, setOfferingData] = useState<
     OfferingApiProps | undefined
   >(undefined);
-
   const [offeringOptions, setOfferingOptions] = useState<OfferingOptionsProps>({
     thirdHourPsalms: '',
     sixthHourPsalms: '',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -82,6 +82,7 @@ const Matins = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setOfferingData(data[1]);
+        setDisabled(false);
 
         setPsalmsObject({
           thirdHourPsalms: data[1].thirdHourPsalms.map((path: string) => ({
@@ -192,7 +193,7 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/matins')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

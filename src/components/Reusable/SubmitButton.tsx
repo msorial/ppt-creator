@@ -4,11 +4,17 @@ import React from 'react';
 
 interface SubmitButtonProps {
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick }) => {
+const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick, disabled }) => {
   return (
-    <Button onClick={onClick} rightIcon={<IconSend size={14} />} color='dark'>
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      rightIcon={<IconSend size={14} />}
+      color='dark'
+    >
       Submit
     </Button>
   );

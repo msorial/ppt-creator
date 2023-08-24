@@ -38,6 +38,7 @@ const Communion = () => {
       seasonalHymns: [],
       allHymns: [],
     });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -64,6 +65,7 @@ const Communion = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setCommunionData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -198,7 +200,7 @@ const Communion = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
-          <SubmitButton onClick={handleSubmit} />
+          <SubmitButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

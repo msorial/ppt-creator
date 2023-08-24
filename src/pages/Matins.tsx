@@ -52,6 +52,7 @@ const Matins = () => {
     gospelLitany: 'standard',
     fiveLitanies: 'no',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -79,6 +80,7 @@ const Matins = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setMatinsData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -212,7 +214,7 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/vespers')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

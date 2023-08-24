@@ -46,6 +46,7 @@ const WordLiturgy = () => {
     paralex: [],
     gospelLitany: 'alternate',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -72,6 +73,7 @@ const WordLiturgy = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setWordData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -189,7 +191,7 @@ const WordLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/offering')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />
