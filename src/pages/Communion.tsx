@@ -160,6 +160,7 @@ const Communion = () => {
                             handleCommunionChange(event, 'seasonalHymns')
                           }
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )
@@ -191,6 +192,7 @@ const Communion = () => {
                             handleCommunionChange(event, 'allHymns')
                           }
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )

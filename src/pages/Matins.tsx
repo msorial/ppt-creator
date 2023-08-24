@@ -167,6 +167,7 @@ const Matins = () => {
                           checked={matinsOptions.doxologies.includes(item)}
                           onChange={handleCheckboxChange}
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )
