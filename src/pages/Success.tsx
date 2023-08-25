@@ -6,6 +6,7 @@ import {
   ThemeIcon,
   Group,
   Divider,
+  Code,
 } from '@mantine/core';
 import { IconCircleCheck, IconHome } from '@tabler/icons-react';
 import useDates from '../store/useDates';
@@ -53,6 +54,8 @@ const Success = () => {
           </>
         )}
       </Group>
+
+      <Code>React.createElement()</Code>
 
       <Button
         variant='outline'

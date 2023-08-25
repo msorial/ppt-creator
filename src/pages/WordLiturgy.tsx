@@ -105,7 +105,7 @@ const WordLiturgy = () => {
     const modifiedWordData = { ...wordData };
     modifiedWordData.paralexHymns = wordOptions.paralex;
     modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
-    console.log(modifiedWordData);
+
     axios
       .post(
         'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,

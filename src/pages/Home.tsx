@@ -28,8 +28,6 @@ const Home = () => {
       });
   }, []);
 
-  console.log(apiDate);
-
   const handleSubmit = () => {
     if (apiDate !== undefined) {
       navigate('/vespers');
