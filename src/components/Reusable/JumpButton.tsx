@@ -69,7 +69,12 @@ const JumpButton = () => {
 
       <Menu.Dropdown>
         {!apiDate && (
-          <Overlay color='#323232' opacity={0.95} center>
+          <Overlay
+            color='#323232'
+            opacity={0.95}
+            center
+            sx={{ borderRadius: '0.25rem' }}
+          >
             <Text fw={500} color='white'>
               Select Date
             </Text>

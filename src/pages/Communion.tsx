@@ -10,7 +10,6 @@ import CardHeader from '../components/Reusable/CardHeader';
 import SubmitButton from '../components/Reusable/SubmitButton';
 import FormHeader from '../components/Reusable/FormHeader';
 import { notifications } from '@mantine/notifications';
-import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -98,7 +97,10 @@ const Communion = () => {
   };
 
   const handleSubmit = () => {
-    if (hasEmptyValues(communionOptions)) {
+    if (
+      communionOptions.seasonalHymns.length === 0 &&
+      communionOptions.allHymns.length === 0
+    ) {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
