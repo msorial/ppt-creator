@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core';
-import { IconSend } from '@tabler/icons-react';
+import { IconMailForward } from '@tabler/icons-react';
 import React from 'react';
 
 interface ApprovalButtonProps {
@@ -8,7 +8,7 @@ interface ApprovalButtonProps {
 
 const ApprovalButton: React.FC<ApprovalButtonProps> = ({ onClick }) => {
   return (
-    <Button onClick={onClick} rightIcon={<IconSend size={14} />}>
+    <Button onClick={onClick} rightIcon={<IconMailForward size={14} />}>
       Submit For Approval
     </Button>
   );
