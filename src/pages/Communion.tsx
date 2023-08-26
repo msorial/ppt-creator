@@ -18,6 +18,7 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import ReadableDate from '../components/Reusable/ReadableDate';
 import SubmitButton from '../components/Reusable/SubmitButton';
+import ApprovalButton from '../components/Reusable/ApprovalButton';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -124,6 +125,26 @@ const Communion = () => {
         console.error('Error submitting data:', error);
       });
   };
+  const handleSubmitForApproval = () => {
+    // Modified Copy of Communion Data to Post to API
+    const modifiedCommunionData = { ...communionData };
+    modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+    modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+    axios.post(
+      'https://stmarkapi.com:5000/communion?date=' + apiDate,
+      modifiedCommunionData
+    );
+
+    axios
+      .post('https://stmarkapi.com:5000/approval?date=' + apiDate)
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
+  };
 
   return (
     <PageLayout
@@ -223,6 +244,7 @@ const Communion = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
+          <ApprovalButton onClick={handleSubmitForApproval} />
           <SubmitButton onClick={handleSubmit} />
         </Group>
       }
