@@ -44,7 +44,6 @@ interface VespersOptionsProps {
 
 const Vespers = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [vespersData, setVespersData] = useState<VespersApiProps | undefined>(
     undefined
@@ -110,7 +109,6 @@ const Vespers = () => {
   };
 
   const handleSubmit = () => {
-    // Check if doxologies, gospelLitany, or fiveLitanies are empty
     if (hasEmptyValues(vesperOptions)) {
       notifications.show({
         withCloseButton: true,

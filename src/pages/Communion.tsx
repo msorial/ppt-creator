@@ -30,7 +30,6 @@ interface CommunionOptionsProps {
 
 const Communion = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [communionData, setCommunionData] = useState<
     CommunionApiProps | undefined
@@ -41,6 +40,23 @@ const Communion = () => {
       allHymns: [],
     });
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [endpointCheck, setEndpointCheck] = useState({
+    vespers: false,
+    matins: false,
+    offering: false,
+    liturgyOfWord: false,
+    liturgyOfFaithful: false,
+    communion: false,
+  });
+
+  const endpoints = [
+    `https://stmarkapi.com:5000/vespers?date=${apiDate}`,
+    `https://stmarkapi.com:5000/matins?date=${apiDate}`,
+    `https://stmarkapi.com:5000/offering?date=${apiDate}`,
+    `https://stmarkapi.com:5000/liturgyOfWord?date=${apiDate}`,
+    `https://stmarkapi.com:5000/liturgyOfFaithful?date=${apiDate}`,
+    `https://stmarkapi.com:5000/communion?date=${apiDate}`,
+  ];
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -97,8 +113,47 @@ const Communion = () => {
     });
   };
 
+  const fetchEndpoints = () => {
+    if (apiDate !== undefined) {
+      axios
+        .all(endpoints.map((endpoint) => axios.get(endpoint)))
+        .then(
+          axios.spread(
+            (
+              vespersResponse,
+              matinsResponse,
+              offeringResponse,
+              liturgyOfWordResponse,
+              liturgyOfFaithfulResponse,
+              communionResponse
+            ) => {
+              setEndpointCheck({
+                vespers: vespersResponse.data.status !== 'No PPT For this date',
+                matins: matinsResponse.data.status !== 'No PPT For this date',
+                offering:
+                  offeringResponse.data.status !== 'No PPT For this date',
+                liturgyOfWord:
+                  liturgyOfWordResponse.data.status !== 'No PPT For this date',
+                liturgyOfFaithful:
+                  liturgyOfFaithfulResponse.data.status !==
+                  'No PPT For this date',
+                communion:
+                  communionResponse.data.status !== 'No PPT For this date',
+              });
+            }
+          )
+        )
+        .catch((error) => {
+          console.error('An error occurred:', error);
+        });
+    }
+  };
+
   const handleSubmit = () => {
-    if (hasEmptyValues(communionOptions)) {
+    if (
+      communionOptions.seasonalHymns.length === 0 &&
+      communionOptions.allHymns.length === 0
+    ) {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
@@ -106,24 +161,41 @@ const Communion = () => {
         color: 'red',
       });
     } else {
-      // Modified Copy of Communion Data to Post to API
-      const modifiedCommunionData = { ...communionData };
-      modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
-      modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+      // Run fetchEndpoints to check endpoint statuses
+      fetchEndpoints();
 
-      axios.post(
-        'https://stmarkapi.com:5000/communion?date=' + apiDate,
-        modifiedCommunionData
+      // Check if all endpoint checks are true
+      const areAllEndpointsTrue = Object.values(endpointCheck).every(
+        (value) => value === true
       );
 
-      axios
-        .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
-        .then(() => {
-          navigate('/success');
-        })
-        .catch((error) => {
-          console.error('Error submitting data:', error);
+      if (areAllEndpointsTrue) {
+        // Modified Copy of Communion Data to Post to API
+        const modifiedCommunionData = { ...communionData };
+        modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+        modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+        axios.post(
+          'https://stmarkapi.com:5000/communion?date=' + apiDate,
+          modifiedCommunionData
+        );
+
+        axios
+          .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+          .then(() => {
+            navigate('/success');
+          })
+          .catch((error) => {
+            console.error('Error submitting data:', error);
+          });
+      } else {
+        notifications.show({
+          withCloseButton: true,
+          autoClose: 5000,
+          message: 'Complete every service before submitting',
+          color: 'red',
         });
+      }
     }
   };
 

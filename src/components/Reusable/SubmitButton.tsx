@@ -1,6 +1,7 @@
 import { Button } from '@mantine/core';
 import { IconSend } from '@tabler/icons-react';
 import React from 'react';
+import useUi from '../../store/useUi';
 
 interface SubmitButtonProps {
   onClick?: () => void;
@@ -8,12 +9,14 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick, disabled }) => {
+  const { darkMode } = useUi();
+
   return (
     <Button
       onClick={onClick}
       disabled={disabled}
       rightIcon={<IconSend size={14} />}
-      color='dark'
+      color={darkMode ? 'gray' : 'dark'}
     >
       Submit
     </Button>

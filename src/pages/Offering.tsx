@@ -11,7 +11,6 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import FormHeader from '../components/Reusable/FormHeader';
 
-// TODO: HasEmptyValues Revamp
 export interface OfferingApiProps {
   transitionSlide: string;
   ThirdHourIntro: string;
@@ -43,7 +42,6 @@ interface PsalmsObjectProps {
 
 const Matins = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [psalmsObject, setPsalmsObject] = useState<PsalmsObjectProps>({
     thirdHourPsalms: [],

@@ -11,8 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
 
-// TODO: HasEmptyValues Revamp
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
   inTheWisdomOfGod: string;
@@ -69,7 +69,6 @@ interface FractionObjectProps {
 
 const FaithfulLiturgy = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [fractionObject, setFractionObject] = useState<FractionObjectProps>({
     seasonalFractions: [],
@@ -173,37 +172,53 @@ const FaithfulLiturgy = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Faithful Data to Post to API
-    const modifiedFaithfulData = { ...faithfulData };
-    modifiedFaithfulData.Liturgy3GreatLitanies = faithfulOptions.threeLitanies;
-    modifiedFaithfulData.prayerOfReconcilation = [
-      faithfulOptions.reconcilePrayer,
-    ];
-    modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
-    modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
-    modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
-    modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
-    modifiedFaithfulData.instiution = faithfulOptions.instiution;
-    modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
-    modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
-    modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
-    modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
-    modifiedFaithfulData.postCommemoration = faithfulOptions.postCommemoration;
-    modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
-    modifiedFaithfulData.seasonalFraction = [faithfulOptions.seasonalFraction];
-    modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
-        modifiedFaithfulData
-      )
-      .then(() => {
-        navigate(`/communion`);
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (
+      faithfulOptions.seasonalFraction === '' &&
+      faithfulOptions.standardFraction === ''
+    ) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please pick a fraction',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Faithful Data to Post to API
+      const modifiedFaithfulData = { ...faithfulData };
+      modifiedFaithfulData.Liturgy3GreatLitanies =
+        faithfulOptions.threeLitanies;
+      modifiedFaithfulData.prayerOfReconcilation = [
+        faithfulOptions.reconcilePrayer,
+      ];
+      modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
+      modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
+      modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
+      modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
+      modifiedFaithfulData.instiution = faithfulOptions.instiution;
+      modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
+      modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
+      modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
+      modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
+      modifiedFaithfulData.postCommemoration =
+        faithfulOptions.postCommemoration;
+      modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
+      modifiedFaithfulData.seasonalFraction = [
+        faithfulOptions.seasonalFraction,
+      ];
+      modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
+          modifiedFaithfulData
+        )
+        .then(() => {
+          navigate(`/communion`);
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (

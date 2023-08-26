@@ -44,7 +44,6 @@ interface MatinsOptionsProps {
 
 const Matins = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [matinsData, setMatinsData] = useState<MatinsApiProps | undefined>(
     undefined

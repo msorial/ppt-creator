@@ -133,7 +133,7 @@ const WordLiturgy = () => {
             >
               <CardHeader header='Liturgy of the Word' />
 
-              {wordData?.paralexHymns.length !== 0 ? (
+              {wordData?.paralexHymns && wordData.paralexHymns.length !== 0 ? (
                 <Stack align='flex-start' spacing={5}>
                   <Text fz='md' fw={500}>
                     Paralex Hymns

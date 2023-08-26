@@ -1,9 +1,10 @@
-import { ActionIcon, Menu } from '@mantine/core';
+import { ActionIcon, Group, LoadingOverlay, Menu } from '@mantine/core';
 import { IconCircleCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 import useDates from '../../store/useDates';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SubmitButton from './SubmitButton';
 
 const JumpButton = () => {
   const navigate = useNavigate();
@@ -16,8 +17,16 @@ const JumpButton = () => {
     liturgyOfFaithful: false,
     communion: false,
   });
+  const [loading, setLoading] = useState<boolean>(true);
+  const isDisabled = Object.values(endpointCheck).some(
+    (value) => value === false
+  );
 
-  let endpoints = [
+  useEffect(() => {
+    setLoading(true);
+  }, [apiDate]);
+
+  const endpoints = [
     `https://stmarkapi.com:5000/vespers?date=${apiDate}`,
     `https://stmarkapi.com:5000/matins?date=${apiDate}`,
     `https://stmarkapi.com:5000/offering?date=${apiDate}`,
@@ -53,6 +62,7 @@ const JumpButton = () => {
                 communion:
                   communionResponse.data.status !== 'No PPT For this date',
               });
+              setLoading(false);
             }
           )
         )
@@ -60,6 +70,17 @@ const JumpButton = () => {
           console.error('An error occurred:', error);
         });
     }
+  };
+
+  const handleSubmit = () => {
+    axios
+      .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+      .then(() => {
+        navigate('/success');
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
   };
 
   return (
@@ -73,6 +94,13 @@ const JumpButton = () => {
       <Menu.Dropdown>
         <Menu.Label>Services</Menu.Label>
         <Menu.Divider />
+
+        <LoadingOverlay
+          visible={loading}
+          overlayBlur={2}
+          transitionDuration={150}
+        />
+
         <Menu.Item
           icon={
             endpointCheck.vespers ? (
@@ -145,6 +173,10 @@ const JumpButton = () => {
         >
           Communion
         </Menu.Item>
+
+        <Group position='center' sx={{ padding: '10px 10px 8px' }}>
+          <SubmitButton onClick={handleSubmit} disabled={isDisabled} />
+        </Group>
       </Menu.Dropdown>
     </Menu>
   );
