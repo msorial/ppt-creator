@@ -6,7 +6,6 @@ import {
   ThemeIcon,
   Group,
   Divider,
-  Code,
   Kbd,
 } from '@mantine/core';
 import { IconCircleCheck, IconRefresh } from '@tabler/icons-react';
