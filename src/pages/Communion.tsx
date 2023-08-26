@@ -1,23 +1,15 @@
-import {
-  Checkbox,
-  Flex,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
-import ReadableDate from '../components/Reusable/ReadableDate';
 import SubmitButton from '../components/Reusable/SubmitButton';
+import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
 import ApprovalButton from '../components/Reusable/ApprovalButton';
 
 export interface CommunionApiProps {
@@ -38,8 +30,6 @@ interface CommunionOptionsProps {
 
 const Communion = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const { apiDate, setSelectedCopticDates } = useDates();
   const [communionData, setCommunionData] = useState<
@@ -50,6 +40,7 @@ const Communion = () => {
       seasonalHymns: [],
       allHymns: [],
     });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -76,6 +67,7 @@ const Communion = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setCommunionData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -106,24 +98,36 @@ const Communion = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Communion Data to Post to API
-    const modifiedCommunionData = { ...communionData };
-    modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
-    modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
-
-    axios.post(
-      'https://stmarkapi.com:5000/communion?date=' + apiDate,
-      modifiedCommunionData
-    );
-
-    axios
-      .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
-      .then(() => {
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (
+      communionOptions.seasonalHymns.length === 0 &&
+      communionOptions.allHymns.length === 0
+    ) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Communion Data to Post to API
+      const modifiedCommunionData = { ...communionData };
+      modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+      modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+      axios.post(
+        'https://stmarkapi.com:5000/communion?date=' + apiDate,
+        modifiedCommunionData
+      );
+
+      axios
+        .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+        .then(() => {
+          navigate('/success');
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
   const handleSubmitForApproval = () => {
     // Modified Copy of Communion Data to Post to API
@@ -148,21 +152,7 @@ const Communion = () => {
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={
@@ -193,6 +183,7 @@ const Communion = () => {
                             handleCommunionChange(event, 'seasonalHymns')
                           }
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )
@@ -224,6 +215,7 @@ const Communion = () => {
                             handleCommunionChange(event, 'allHymns')
                           }
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )
@@ -244,8 +236,8 @@ const Communion = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
+          <SubmitButton onClick={handleSubmit} disabled={disabled} />
           <ApprovalButton onClick={handleSubmitForApproval} />
-          <SubmitButton onClick={handleSubmit} />
         </Group>
       }
     />

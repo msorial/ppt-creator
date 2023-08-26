@@ -8,7 +8,7 @@ interface ApprovalButtonProps {
 
 const ApprovalButton: React.FC<ApprovalButtonProps> = ({ onClick }) => {
   return (
-    <Button onClick={onClick} rightIcon={<IconSend size={14} />} color='dark'>
+    <Button onClick={onClick} rightIcon={<IconSend size={14} />}>
       Submit For Approval
     </Button>
   );

@@ -1,12 +1,4 @@
-import {
-  Flex,
-  Group,
-  Radio,
-  Select,
-  Skeleton,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Flex, Group, Radio, Select, Skeleton } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
@@ -14,12 +6,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
-import ReadableDate from '../components/Reusable/ReadableDate';
+import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
 
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
@@ -77,9 +69,6 @@ interface FractionObjectProps {
 
 const FaithfulLiturgy = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [fractionObject, setFractionObject] = useState<FractionObjectProps>({
     seasonalFractions: [],
@@ -107,6 +96,7 @@ const FaithfulLiturgy = () => {
       seasonalFraction: '',
       standardFraction: '',
     });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -146,6 +136,7 @@ const FaithfulLiturgy = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setFaithfulData(data[1]);
+        setDisabled(false);
 
         setFractionObject({
           seasonalFractions: data[1].seasonalFraction.map((path: string) => ({
@@ -181,56 +172,60 @@ const FaithfulLiturgy = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Vespers Data to Post to API
-    const modifiedFaithfulData = { ...faithfulData };
-    modifiedFaithfulData.Liturgy3GreatLitanies = faithfulOptions.threeLitanies;
-    modifiedFaithfulData.prayerOfReconcilation = [
-      faithfulOptions.reconcilePrayer,
-    ];
-    modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
-    modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
-    modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
-    modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
-    modifiedFaithfulData.instiution = faithfulOptions.instiution;
-    modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
-    modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
-    modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
-    modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
-    modifiedFaithfulData.postCommemoration = faithfulOptions.postCommemoration;
-    modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
-    modifiedFaithfulData.seasonalFraction = [faithfulOptions.seasonalFraction];
-    modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
-        modifiedFaithfulData
-      )
-      .then(() => {
-        navigate(`/communion`);
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (
+      (faithfulOptions.seasonalFraction === '' ||
+        faithfulOptions.seasonalFraction === null) &&
+      (faithfulOptions.standardFraction === '' ||
+        faithfulOptions.standardFraction === null)
+    ) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please pick a fraction',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Faithful Data to Post to API
+      const modifiedFaithfulData = { ...faithfulData };
+      modifiedFaithfulData.Liturgy3GreatLitanies =
+        faithfulOptions.threeLitanies;
+      modifiedFaithfulData.prayerOfReconcilation = [
+        faithfulOptions.reconcilePrayer,
+      ];
+      modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
+      modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
+      modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
+      modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
+      modifiedFaithfulData.instiution = faithfulOptions.instiution;
+      modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
+      modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
+      modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
+      modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
+      modifiedFaithfulData.postCommemoration =
+        faithfulOptions.postCommemoration;
+      modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
+      modifiedFaithfulData.seasonalFraction = [
+        faithfulOptions.seasonalFraction,
+      ];
+      modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
+          modifiedFaithfulData
+        )
+        .then(() => {
+          navigate(`/communion`);
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={
@@ -552,7 +547,7 @@ const FaithfulLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyofWord')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

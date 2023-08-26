@@ -28,8 +28,6 @@ const Home = () => {
       });
   }, []);
 
-  console.log(apiDate);
-
   const handleSubmit = () => {
     if (apiDate !== undefined) {
       navigate('/vespers');
@@ -37,7 +35,6 @@ const Home = () => {
       notifications.show({
         withCloseButton: true,
         autoClose: 5000,
-        title: 'Select Date',
         message: 'Date must be selected to generate powerpoint',
         color: 'red',
         icon: <IconAlertCircle />,

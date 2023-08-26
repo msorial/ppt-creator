@@ -1,12 +1,4 @@
-import {
-  Checkbox,
-  Flex,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
@@ -14,12 +6,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
-import ReadableDate from '../components/Reusable/ReadableDate';
+import FormHeader from '../components/Reusable/FormHeader';
 
 export interface WordLiturgyApiProps {
   hymnOfCenser: string;
@@ -46,8 +37,6 @@ interface WordLiturgyOptionsProps {
 
 const WordLiturgy = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const { apiDate, setSelectedCopticDates } = useDates();
   const [wordData, setWordData] = useState<WordLiturgyApiProps | undefined>(
@@ -57,6 +46,7 @@ const WordLiturgy = () => {
     paralex: [],
     gospelLitany: 'alternate',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -83,6 +73,7 @@ const WordLiturgy = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setWordData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -114,7 +105,7 @@ const WordLiturgy = () => {
     const modifiedWordData = { ...wordData };
     modifiedWordData.paralexHymns = wordOptions.paralex;
     modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
-    console.log(modifiedWordData);
+
     axios
       .post(
         'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
@@ -130,21 +121,7 @@ const WordLiturgy = () => {
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={
@@ -156,7 +133,7 @@ const WordLiturgy = () => {
             >
               <CardHeader header='Liturgy of the Word' />
 
-              {wordData?.paralexHymns.length !== 0 ? (
+              {wordData?.paralexHymns && wordData.paralexHymns.length !== 0 ? (
                 <Stack align='flex-start' spacing={5}>
                   <Text fz='md' fw={500}>
                     Paralex Hymns
@@ -172,6 +149,7 @@ const WordLiturgy = () => {
                             checked={wordOptions.paralex.includes(item)}
                             onChange={handleCheckboxChange}
                             label={item.split('/').slice(-1)[0].split('.')[0]}
+                            transitionDuration={0}
                           />
                         )
                       )
@@ -214,7 +192,7 @@ const WordLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/offering')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

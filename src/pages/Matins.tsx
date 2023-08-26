@@ -1,12 +1,4 @@
-import {
-  Checkbox,
-  Flex,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
 import NextButton from '../components/Reusable/NextButton';
 import FormCard from '../components/Reusable/FormCard';
 import PageLayout from '../components/Layout/PageLayout';
@@ -14,12 +6,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useDates from '../store/useDates';
-import { useMediaQuery } from '@mantine/hooks';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
-import ReadableDate from '../components/Reusable/ReadableDate';
+import FormHeader from '../components/Reusable/FormHeader';
+import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
+import { notifications } from '@mantine/notifications';
 
 export interface MatinsApiProps {
   Matins: string;
@@ -51,9 +44,6 @@ interface MatinsOptionsProps {
 
 const Matins = () => {
   const navigate = useNavigate();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [matinsData, setMatinsData] = useState<MatinsApiProps | undefined>(
     undefined
@@ -63,6 +53,7 @@ const Matins = () => {
     gospelLitany: 'standard',
     fiveLitanies: 'no',
   });
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -90,6 +81,7 @@ const Matins = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setMatinsData(data[1]);
+        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -117,42 +109,37 @@ const Matins = () => {
   };
 
   const handleSubmit = () => {
-    // Modified Copy of Matins Data to Post to API
-    const modifiedMatinsData = { ...matinsData };
-    modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
-    modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
-    modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
-
-    axios
-      .post(
-        'https://stmarkapi.com:5000/matins?date=' + apiDate,
-        modifiedMatinsData
-      )
-      .then(() => {
-        navigate('/offering');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
+    if (hasEmptyValues(matinsOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
       });
+    } else {
+      // Modified Copy of Matins Data to Post to API
+      const modifiedMatinsData = { ...matinsData };
+      modifiedMatinsData.seasonmatinsDoxologies = matinsOptions.doxologies;
+      modifiedMatinsData.matinsLitanyofTheGospel = matinsOptions.gospelLitany;
+      modifiedMatinsData.matins5ShortLitanies = matinsOptions.fiveLitanies;
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/matins?date=' + apiDate,
+          modifiedMatinsData
+        )
+        .then(() => {
+          navigate('/offering');
+        })
+        .catch((error) => {
+          console.error('Error submitting data:', error);
+        });
+    }
   };
 
   return (
     <PageLayout
-      header={
-        <Flex
-          gap='xl'
-          justify='space-between'
-          align='end'
-          direction='row'
-          wrap='nowrap'
-          sx={{ width: isMobile ? '100%' : '80%' }}
-        >
-          <Text align='left' fw={500}>
-            Selected Date
-          </Text>
-          <ReadableDate />
-        </Flex>
-      }
+      header={<FormHeader />}
       form={
         <FormCard
           content={
@@ -163,18 +150,6 @@ const Matins = () => {
               direction='column'
             >
               <CardHeader header='Matins' />
-
-              <FormField
-                title='Bishop Present'
-                options={
-                  <SegControl
-                    data={[
-                      { label: 'No', value: 'ng' },
-                      { label: 'Yes', value: 'yes' },
-                    ]}
-                  />
-                }
-              />
 
               <Stack align='flex-start' spacing={5}>
                 <Text fz='md' fw={500}>
@@ -191,6 +166,7 @@ const Matins = () => {
                           checked={matinsOptions.doxologies.includes(item)}
                           onChange={handleCheckboxChange}
                           label={item.split('/').slice(-1)[0].split('.')[0]}
+                          transitionDuration={0}
                         />
                       )
                     )
@@ -249,7 +225,7 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/vespers')} />
-          <NextButton onClick={handleSubmit} />
+          <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
     />

@@ -14,7 +14,7 @@ const ReadableDate = () => {
   }
 
   return (
-    <Text align='right' fs='italic'>
+    <Text align='left' fs='italic'>
       {formattedDate}
     </Text>
   );

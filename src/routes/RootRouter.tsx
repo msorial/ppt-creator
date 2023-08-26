@@ -3,6 +3,7 @@ import { Center, Loader } from '@mantine/core';
 import { Route, Routes } from 'react-router-dom';
 import useDates from '../store/useDates';
 import DelayedRender from './DelayedRender';
+import Success from '../pages/Success';
 
 const Home = lazy(() => import('../pages/Home'));
 const Vespers = lazy(() => import('../pages/Vespers'));
@@ -89,6 +90,14 @@ const RootRouter = () => {
               <Communion />
             </Suspense>
           </DelayedRender>
+        }
+      />
+      <Route
+        path='success'
+        element={
+          <Suspense fallback={Loading}>
+            <Success />
+          </Suspense>
         }
       />
     </Routes>
