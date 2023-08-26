@@ -10,6 +10,7 @@ import CardHeader from '../components/Reusable/CardHeader';
 import SubmitButton from '../components/Reusable/SubmitButton';
 import FormHeader from '../components/Reusable/FormHeader';
 import { notifications } from '@mantine/notifications';
+import ApprovalButton from '../components/Reusable/ApprovalButton';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -128,6 +129,26 @@ const Communion = () => {
         });
     }
   };
+  const handleSubmitForApproval = () => {
+    // Modified Copy of Communion Data to Post to API
+    const modifiedCommunionData = { ...communionData };
+    modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+    modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+    axios.post(
+      'https://stmarkapi.com:5000/communion?date=' + apiDate,
+      modifiedCommunionData
+    );
+
+    axios
+      .post('https://stmarkapi.com:5000/approval?date=' + apiDate)
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
+  };
 
   return (
     <PageLayout
@@ -216,6 +237,7 @@ const Communion = () => {
         <Group>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
           <SubmitButton onClick={handleSubmit} disabled={disabled} />
+          <ApprovalButton onClick={handleSubmitForApproval} />
         </Group>
       }
     />
