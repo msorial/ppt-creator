@@ -46,7 +46,6 @@ const Communion = () => {
     offering: false,
     liturgyOfWord: false,
     liturgyOfFaithful: false,
-    communion: false,
   });
 
   const endpoints = [
@@ -55,7 +54,6 @@ const Communion = () => {
     `https://stmarkapi.com:5000/offering?date=${apiDate}`,
     `https://stmarkapi.com:5000/liturgyOfWord?date=${apiDate}`,
     `https://stmarkapi.com:5000/liturgyOfFaithful?date=${apiDate}`,
-    `https://stmarkapi.com:5000/communion?date=${apiDate}`,
   ];
 
   // This useEffect returns selections previously made
@@ -124,8 +122,7 @@ const Communion = () => {
               matinsResponse,
               offeringResponse,
               liturgyOfWordResponse,
-              liturgyOfFaithfulResponse,
-              communionResponse
+              liturgyOfFaithfulResponse
             ) => {
               setEndpointCheck({
                 vespers: vespersResponse.data.status !== 'No PPT For this date',
@@ -137,8 +134,6 @@ const Communion = () => {
                 liturgyOfFaithful:
                   liturgyOfFaithfulResponse.data.status !==
                   'No PPT For this date',
-                communion:
-                  communionResponse.data.status !== 'No PPT For this date',
               });
             }
           )
@@ -149,7 +144,8 @@ const Communion = () => {
     }
   };
 
-  const handleSubmit = () => {
+  // TODO: Fix 2 click error
+  const handleSubmit = async () => {
     if (
       communionOptions.seasonalHymns.length === 0 &&
       communionOptions.allHymns.length === 0
@@ -161,40 +157,39 @@ const Communion = () => {
         color: 'red',
       });
     } else {
-      // Run fetchEndpoints to check endpoint statuses
-      fetchEndpoints();
+      try {
+        // Wait for all endpoint checks to complete
+        await fetchEndpoints();
 
-      // Check if all endpoint checks are true
-      const areAllEndpointsTrue = Object.values(endpointCheck).every(
-        (value) => value === true
-      );
-
-      if (areAllEndpointsTrue) {
-        // Modified Copy of Communion Data to Post to API
-        const modifiedCommunionData = { ...communionData };
-        modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
-        modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
-
-        axios.post(
-          'https://stmarkapi.com:5000/communion?date=' + apiDate,
-          modifiedCommunionData
+        // Check if all endpoint checks are true
+        const areAllEndpointsTrue = Object.values(endpointCheck).every(
+          (value) => value === true
         );
 
-        axios
-          .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
-          .then(() => {
-            navigate('/success');
-          })
-          .catch((error) => {
-            console.error('Error submitting data:', error);
+        if (areAllEndpointsTrue) {
+          // Modified Copy of Communion Data to Post to API
+          const modifiedCommunionData = { ...communionData };
+          modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+          modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+          await axios.post(
+            'https://stmarkapi.com:5000/communion?date=' + apiDate,
+            modifiedCommunionData
+          );
+
+          await axios
+            .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+            .then(() => navigate('/success'));
+        } else {
+          notifications.show({
+            withCloseButton: true,
+            autoClose: 5000,
+            message: 'Complete every service before submitting',
+            color: 'red',
           });
-      } else {
-        notifications.show({
-          withCloseButton: true,
-          autoClose: 5000,
-          message: 'Complete every service before submitting',
-          color: 'red',
-        });
+        }
+      } catch (error) {
+        console.error('Error submitting data:', error);
       }
     }
   };
