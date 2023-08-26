@@ -1,4 +1,11 @@
-import { ActionIcon, Group, LoadingOverlay, Menu } from '@mantine/core';
+import {
+  ActionIcon,
+  Group,
+  LoadingOverlay,
+  Menu,
+  Overlay,
+  Text,
+} from '@mantine/core';
 import { IconCircleCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 import useDates from '../../store/useDates';
 import axios from 'axios';
@@ -6,68 +13,37 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SubmitButton from './SubmitButton';
 
+export interface EndpointCheckProps {
+  vespers: boolean;
+  matins: boolean;
+  offering: boolean;
+  liturgyOfWord: boolean;
+  liturgyOfFaithful: boolean;
+  communion: boolean;
+}
+
 const JumpButton = () => {
   const navigate = useNavigate();
   const { apiDate } = useDates();
-  const [endpointCheck, setEndpointCheck] = useState({
-    vespers: false,
-    matins: false,
-    offering: false,
-    liturgyOfWord: false,
-    liturgyOfFaithful: false,
-    communion: false,
-  });
   const [loading, setLoading] = useState<boolean>(true);
-  const isDisabled = Object.values(endpointCheck).some(
-    (value) => value === false
-  );
+  const [disabled, setDisabled] = useState<boolean>(true);
+  const [endpointCheck, setEndpointCheck] = useState<EndpointCheckProps>();
 
   useEffect(() => {
     setLoading(true);
   }, [apiDate]);
 
-  const endpoints = [
-    `https://stmarkapi.com:5000/vespers?date=${apiDate}`,
-    `https://stmarkapi.com:5000/matins?date=${apiDate}`,
-    `https://stmarkapi.com:5000/offering?date=${apiDate}`,
-    `https://stmarkapi.com:5000/liturgyOfWord?date=${apiDate}`,
-    `https://stmarkapi.com:5000/liturgyOfFaithful?date=${apiDate}`,
-    `https://stmarkapi.com:5000/communion?date=${apiDate}`,
-  ];
-
   const fetchEndpoints = () => {
     if (apiDate !== undefined) {
-      axios
-        .all(endpoints.map((endpoint) => axios.get(endpoint)))
-        .then(
-          axios.spread(
-            (
-              vespersResponse,
-              matinsResponse,
-              offeringResponse,
-              liturgyOfWordResponse,
-              liturgyOfFaithfulResponse,
-              communionResponse
-            ) => {
-              setEndpointCheck({
-                vespers: vespersResponse.data.status !== 'No PPT For this date',
-                matins: matinsResponse.data.status !== 'No PPT For this date',
-                offering:
-                  offeringResponse.data.status !== 'No PPT For this date',
-                liturgyOfWord:
-                  liturgyOfWordResponse.data.status !== 'No PPT For this date',
-                liturgyOfFaithful:
-                  liturgyOfFaithfulResponse.data.status !==
-                  'No PPT For this date',
-                communion:
-                  communionResponse.data.status !== 'No PPT For this date',
-              });
-              setLoading(false);
-            }
-          )
-        )
+      fetch('https://stmarkapi.com:5000/getAll?date=' + apiDate)
+        .then((response) => response.json())
+        .then((data) => {
+          setEndpointCheck(data);
+          setLoading(false);
+          setDisabled(Object.values(data).some((value) => value === false));
+        })
         .catch((error) => {
-          console.error('An error occurred:', error);
+          console.error('Error fetching API data:', error);
         });
     }
   };
@@ -92,18 +68,25 @@ const JumpButton = () => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>Services</Menu.Label>
-        <Menu.Divider />
+        {!apiDate && (
+          <Overlay color='#323232' opacity={0.95} center>
+            <Text fw={500} color='white'>
+              Select Date
+            </Text>
+          </Overlay>
+        )}
 
         <LoadingOverlay
-          visible={loading}
+          visible={apiDate === undefined ? false : loading}
           overlayBlur={2}
           transitionDuration={150}
         />
 
+        <Menu.Label>Services</Menu.Label>
+        <Menu.Divider />
         <Menu.Item
           icon={
-            endpointCheck.vespers ? (
+            endpointCheck?.vespers ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -115,7 +98,7 @@ const JumpButton = () => {
         </Menu.Item>
         <Menu.Item
           icon={
-            endpointCheck.matins ? (
+            endpointCheck?.matins ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -127,7 +110,7 @@ const JumpButton = () => {
         </Menu.Item>
         <Menu.Item
           icon={
-            endpointCheck.offering ? (
+            endpointCheck?.offering ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -139,7 +122,7 @@ const JumpButton = () => {
         </Menu.Item>
         <Menu.Item
           icon={
-            endpointCheck.liturgyOfWord ? (
+            endpointCheck?.liturgyOfWord ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -151,7 +134,7 @@ const JumpButton = () => {
         </Menu.Item>
         <Menu.Item
           icon={
-            endpointCheck.liturgyOfFaithful ? (
+            endpointCheck?.liturgyOfFaithful ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -163,7 +146,7 @@ const JumpButton = () => {
         </Menu.Item>
         <Menu.Item
           icon={
-            endpointCheck.communion ? (
+            endpointCheck?.communion ? (
               <IconCircleCheck size={14} stroke={1.5} color='green' />
             ) : (
               <IconX size={14} stroke={1.5} color='red' />
@@ -175,7 +158,7 @@ const JumpButton = () => {
         </Menu.Item>
 
         <Group position='center' sx={{ padding: '10px 10px 8px' }}>
-          <SubmitButton onClick={handleSubmit} disabled={isDisabled} />
+          <SubmitButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       </Menu.Dropdown>
     </Menu>

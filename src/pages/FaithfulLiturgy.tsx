@@ -173,8 +173,10 @@ const FaithfulLiturgy = () => {
 
   const handleSubmit = () => {
     if (
-      faithfulOptions.seasonalFraction === '' &&
-      faithfulOptions.standardFraction === ''
+      (faithfulOptions.seasonalFraction === '' ||
+        faithfulOptions.seasonalFraction === null) &&
+      (faithfulOptions.standardFraction === '' ||
+        faithfulOptions.standardFraction === null)
     ) {
       notifications.show({
         withCloseButton: true,
