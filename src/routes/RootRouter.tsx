@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import useDates from '../store/useDates';
 import DelayedRender from './DelayedRender';
 import Success from '../pages/Success';
+import ApprovalSuccess from '../pages/ApprovalSuccess';
 
 const Home = lazy(() => import('../pages/Home'));
 const Vespers = lazy(() => import('../pages/Vespers'));
@@ -97,6 +98,14 @@ const RootRouter = () => {
         element={
           <Suspense fallback={Loading}>
             <Success />
+          </Suspense>
+        }
+      />
+      <Route
+        path='successapproval'
+        element={
+          <Suspense fallback={Loading}>
+            <ApprovalSuccess />
           </Suspense>
         }
       />
