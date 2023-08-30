@@ -108,7 +108,7 @@ const Communion = () => {
     axios
       .post('https://stmarkapi.com:5000/approval?date=' + apiDate)
       .then(() => {
-        navigate('/');
+        navigate('/successapproval');
       })
       .catch((error) => {
         console.error('Error submitting data:', error);

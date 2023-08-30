@@ -50,7 +50,7 @@ const JumpButton = () => {
     axios
       .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
       .then(() => {
-        navigate('/success');
+        navigate('/successapproval');
       })
       .catch((error) => {
         console.error('Error submitting data:', error);
