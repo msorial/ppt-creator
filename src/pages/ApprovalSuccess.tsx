@@ -1,22 +1,11 @@
 import { Flex, Title, Button, ThemeIcon } from '@mantine/core';
 import { IconCircleCheck, IconRefresh } from '@tabler/icons-react';
-import useDates from '../store/useDates';
-import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import useUi from '../store/useUi';
 
 const ApprovalSuccess = () => {
   const navigate = useNavigate();
   const { darkMode } = useUi();
-  const { apiDate } = useDates();
-  const dateObject = apiDate
-    ? moment(`${apiDate} 00:00:00`, 'YYYY-MM-DD HH:mm:ss')
-    : undefined;
-  let formattedDate = '';
-
-  if (dateObject) {
-    formattedDate = moment(apiDate).format('MM/DD/YYYY');
-  }
 
   return (
     <Flex
