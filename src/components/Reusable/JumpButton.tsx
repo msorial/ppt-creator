@@ -48,7 +48,7 @@ const JumpButton = () => {
 
   const handleSubmit = () => {
     axios
-      .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
+      .post('https://stmarkapi.com:5000/approval?date=' + apiDate)
       .then(() => {
         navigate('/successapproval');
       })
@@ -161,7 +161,7 @@ const JumpButton = () => {
         </Menu.Item>
 
         <Group position='center' sx={{ padding: '10px 10px 8px' }}>
-          <ApprovalButton onClick={handleSubmit}/>
+          <ApprovalButton onClick={handleSubmit} />
         </Group>
       </Menu.Dropdown>
     </Menu>
