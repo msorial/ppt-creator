@@ -26,7 +26,6 @@ const JumpButton = () => {
   const navigate = useNavigate();
   const { apiDate } = useDates();
   const [loading, setLoading] = useState<boolean>(true);
-  const [disabled, setDisabled] = useState<boolean>(true);
   const [endpointCheck, setEndpointCheck] = useState<EndpointCheckProps>();
 
   useEffect(() => {
@@ -40,7 +39,6 @@ const JumpButton = () => {
         .then((data) => {
           setEndpointCheck(data);
           setLoading(false);
-          setDisabled(Object.values(data).some((value) => value === false));
         })
         .catch((error) => {
           console.error('Error fetching API data:', error);

@@ -7,9 +7,7 @@ import axios from 'axios';
 import useDates from '../store/useDates';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
-import SubmitButton from '../components/Reusable/SubmitButton';
 import FormHeader from '../components/Reusable/FormHeader';
-import { notifications } from '@mantine/notifications';
 import ApprovalButton from '../components/Reusable/ApprovalButton';
 
 export interface CommunionApiProps {
@@ -40,7 +38,6 @@ const Communion = () => {
       seasonalHymns: [],
       allHymns: [],
     });
-  const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
@@ -67,7 +64,6 @@ const Communion = () => {
       .then((data) => {
         setSelectedCopticDates(data[0]);
         setCommunionData(data[1]);
-        setDisabled(false);
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
@@ -97,38 +93,7 @@ const Communion = () => {
     });
   };
 
-  const handleSubmit = () => {
-    if (
-      communionOptions.seasonalHymns.length === 0 &&
-      communionOptions.allHymns.length === 0
-    ) {
-      notifications.show({
-        withCloseButton: true,
-        autoClose: 2000,
-        message: 'Please fill in all options',
-        color: 'red',
-      });
-    } else {
-      // Modified Copy of Communion Data to Post to API
-      const modifiedCommunionData = { ...communionData };
-      modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
-      modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
 
-      axios.post(
-        'https://stmarkapi.com:5000/communion?date=' + apiDate,
-        modifiedCommunionData
-      );
-
-      axios
-        .post('https://stmarkapi.com:5000/makeppt?date=' + apiDate)
-        .then(() => {
-          navigate('/success');
-        })
-        .catch((error) => {
-          console.error('Error submitting data:', error);
-        });
-    }
-  };
   const handleSubmitForApproval = () => {
     // Modified Copy of Communion Data to Post to API
     const modifiedCommunionData = { ...communionData };
