@@ -236,7 +236,7 @@ const Communion = () => {
       footer={
         <Group position='center'>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
-          <SubmitButton onClick={handleSubmit} disabled={disabled} />
+         
           <ApprovalButton onClick={handleSubmitForApproval} />
         </Group>
       }

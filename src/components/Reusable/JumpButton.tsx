@@ -11,7 +11,7 @@ import useDates from '../../store/useDates';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SubmitButton from './SubmitButton';
+import ApprovalButton from './ApprovalButton';
 
 export interface EndpointCheckProps {
   vespers: boolean;
@@ -163,7 +163,7 @@ const JumpButton = () => {
         </Menu.Item>
 
         <Group position='center' sx={{ padding: '10px 10px 8px' }}>
-          <SubmitButton onClick={handleSubmit} disabled={disabled} />
+          <ApprovalButton onClick={handleSubmit}/>
         </Group>
       </Menu.Dropdown>
     </Menu>
