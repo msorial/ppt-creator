@@ -9,44 +9,12 @@ interface SubmitButtonProps {
   disabled?: boolean;
 }
 
-
-
-const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick }) => {
+const SubmitButton: React.FC<SubmitButtonProps> = () => {
   const { darkMode } = useUi();
-<<<<<<< Updated upstream
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const correctPassword = 'yourCorrectPassword'; // Replace with the actual correct password
-
-  const handlePasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-    setEnteredPassword(event.target.value);
-  };
-
-  const handleButtonClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalConfirm = () => {
-    if (enteredPassword === correctPassword) {
-      onClick(); // Perform the action
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleModalCancel = () => {
-    setIsModalOpen(false);
-    setEnteredPassword('');
-  };
-
-  return (
-    <div>
-      <Button
-        onClick={handleButtonClick}
-        disabled={isModalOpen}
-=======
   const [opened, { open, close }] = useDisclosure(false);
-
-  const [enteredPassword, setEnteredPassword] = useState('');
+  const [error, setError] = useState(false);
+  const [pinValue, setPinValue] = useState('');
+  //const [enteredPassword, setEnteredPassword] = useState('');
   const correctPassword = '1234'; // Replace with the actual correct password
 
   // const handlePasswordChange = (event: {
@@ -55,9 +23,14 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick }) => {
   //   setEnteredPassword(event.target.value);
   // };
 
-  // const handleButtonClick = () => {
-  //   setOpened(true);
-  // };
+  const handlePinComplete = () => {
+    console.log('Pin Value:', pinValue);
+    if (pinValue === correctPassword) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
   // const handleModalConfirm = () => {
   //   if (enteredPassword === correctPassword) {
@@ -75,39 +48,28 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick }) => {
     <>
       <Modal opened={opened} onClose={close} title='Authentication' centered>
         <Group position='center'>
-          <PinInput />
+          <PinInput
+            type={/^[0-9]+/}
+            inputType='tel'
+            inputMode='numeric'
+            autoFocus={true}
+            manageFocus={true}
+            error={error}
+            onComplete={handlePinComplete}
+            onChange={(value) => setPinValue(value)}
+          />
         </Group>
       </Modal>
-
-      <Button
-        onClick={() => {
-          onClick;
-          open;
-        }}
-        disabled={disabled}
->>>>>>> Stashed changes
-        rightIcon={<IconSend size={14} />}
-        color={darkMode ? 'gray' : 'dark'}
-      >
-        Submit
-      </Button>
-<<<<<<< Updated upstream
-      {isModalOpen && (
-        <div>
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={enteredPassword}
-            onChange={handlePasswordChange}
-          />
-          <button onClick={handleModalConfirm}>Confirm</button>
-          <button onClick={handleModalCancel}>Cancel</button>
-        </div>
-      )}
-    </div>
-=======
+      <Group position='center'>
+        <Button
+          onClick={open}
+          rightIcon={<IconSend size={14} />}
+          color={darkMode ? 'gray' : 'dark'}
+        >
+          Submit
+        </Button>
+      </Group>
     </>
->>>>>>> Stashed changes
   );
 };
 
