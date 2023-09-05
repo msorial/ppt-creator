@@ -10,6 +10,7 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormHeader from '../components/Reusable/FormHeader';
 import ApprovalButton from '../components/Reusable/ApprovalButton';
 import SaveButton from '../components/Reusable/SaveButton';
+import { notifications } from '@mantine/notifications';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -100,10 +101,19 @@ const Communion = () => {
     modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
     modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
 
-    axios.post(
-      'https://stmarkapi.com:5000/communion?date=' + apiDate,
-      modifiedCommunionData
-    );
+    axios
+      .post(
+        'https://stmarkapi.com:5000/communion?date=' + apiDate,
+        modifiedCommunionData
+      )
+      .then(() => {
+        notifications.show({
+          withCloseButton: true,
+          autoClose: 2000,
+          message: 'Selections Saved',
+          color: 'green',
+        });
+      });
   };
 
   const handleSubmitForApproval = () => {
