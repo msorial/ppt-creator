@@ -13,6 +13,7 @@ import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
 import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
 import { notifications } from '@mantine/notifications';
+import SaveButton from '../components/Reusable/SaveButton';
 
 export interface VespersApiProps {
   Vespers: string;
@@ -106,6 +107,34 @@ const Vespers = () => {
         doxologies: sortedOptions,
       };
     });
+  };
+  const Save = () => {
+    if (hasEmptyValues(vesperOptions)) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please fill in all options',
+        color: 'red',
+      });
+    } else {
+      // Modified Copy of Vespers Data to Post to API
+      const modifiedVespersData = { ...vespersData };
+      modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
+      modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
+      modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
+
+      axios.post(
+        'https://stmarkapi.com:5000/vespers?date=' + apiDate,
+        modifiedVespersData
+      ).then(()=>{
+        notifications.show({
+          withCloseButton: true,
+          autoClose: 2000,
+          message: 'Selections Saved',
+          color: 'green',
+        });
+      })
+    }
   };
 
   const handleSubmit = () => {
@@ -237,6 +266,7 @@ const Vespers = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/')} />
+          <SaveButton onClick={Save} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

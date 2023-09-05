@@ -12,6 +12,7 @@ import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
 import { notifications } from '@mantine/notifications';
+import SaveButton from '../components/Reusable/SaveButton';
 
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
@@ -169,6 +170,60 @@ const FaithfulLiturgy = () => {
       ...prevOptions,
       [fraction]: newValue,
     }));
+  };
+
+  const Save = () => {
+    if (
+      (faithfulOptions.seasonalFraction === '' ||
+        faithfulOptions.seasonalFraction === null) &&
+      (faithfulOptions.standardFraction === '' ||
+        faithfulOptions.standardFraction === null)
+    ) {
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: 'Please pick a fraction',
+        color: 'red',
+      });
+    } else {
+      // Modified Copy of Faithful Data to Post to API
+      const modifiedFaithfulData = { ...faithfulData };
+      modifiedFaithfulData.Liturgy3GreatLitanies =
+        faithfulOptions.threeLitanies;
+      modifiedFaithfulData.prayerOfReconcilation = [
+        faithfulOptions.reconcilePrayer,
+      ];
+      modifiedFaithfulData.rejoiceOMary = faithfulOptions.rejoiceOMary;
+      modifiedFaithfulData.anaphora = faithfulOptions.anaphora;
+      modifiedFaithfulData.OLordofHosts = faithfulOptions.OLordofHosts;
+      modifiedFaithfulData.agiosLiturgy = faithfulOptions.agios;
+      modifiedFaithfulData.instiution = faithfulOptions.instiution;
+      modifiedFaithfulData.yeahWeAskYou = faithfulOptions.yeahWeAskYou;
+      modifiedFaithfulData.jeNaiNan = faithfulOptions.jeNaiNan;
+      modifiedFaithfulData.healingToThesick = faithfulOptions.healingToTheSick;
+      modifiedFaithfulData.Commemoration = faithfulOptions.commemoration;
+      modifiedFaithfulData.postCommemoration =
+        faithfulOptions.postCommemoration;
+      modifiedFaithfulData.prefaceToTheFraction = faithfulOptions.fractionIntro;
+      modifiedFaithfulData.seasonalFraction = [
+        faithfulOptions.seasonalFraction,
+      ];
+      modifiedFaithfulData.fractionIndex = [faithfulOptions.standardFraction];
+
+      axios
+        .post(
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
+          modifiedFaithfulData
+        )
+        .then(() => {
+          notifications.show({
+            withCloseButton: true,
+            autoClose: 2000,
+            message: 'Selections Saved',
+            color: 'green',
+          });
+        });
+    }
   };
 
   const handleSubmit = () => {
@@ -547,6 +602,7 @@ const FaithfulLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyofWord')} />
+          <SaveButton onClick={Save} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

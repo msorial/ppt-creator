@@ -9,6 +9,7 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormHeader from '../components/Reusable/FormHeader';
 import ApprovalButton from '../components/Reusable/ApprovalButton';
+import SaveButton from '../components/Reusable/SaveButton';
 
 export interface CommunionApiProps {
   psalm150: string;
@@ -93,6 +94,17 @@ const Communion = () => {
     });
   };
 
+  const Save = () => {
+    // Modified Copy of Communion Data to Post to API
+    const modifiedCommunionData = { ...communionData };
+    modifiedCommunionData.communionHymns = communionOptions.seasonalHymns;
+    modifiedCommunionData.AllCommunionHymns = communionOptions.allHymns;
+
+    axios.post(
+      'https://stmarkapi.com:5000/communion?date=' + apiDate,
+      modifiedCommunionData
+    );
+  };
 
   const handleSubmitForApproval = () => {
     // Modified Copy of Communion Data to Post to API
@@ -201,7 +213,7 @@ const Communion = () => {
       footer={
         <Group position='center'>
           <BackButton onClick={() => navigate('/liturgyOfFaithful')} />
-         
+          <SaveButton onClick={Save} />
           <ApprovalButton onClick={handleSubmitForApproval} />
         </Group>
       }

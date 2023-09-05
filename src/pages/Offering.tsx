@@ -10,6 +10,8 @@ import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
+import SaveButton from '../components/Reusable/SaveButton';
 
 export interface OfferingApiProps {
   transitionSlide: string;
@@ -109,6 +111,27 @@ const Matins = () => {
     }));
   };
 
+  const Save = () => {
+    // Modified Copy of Offering Data to Post to API
+    const modifiedOfferingData = { ...offeringData };
+    modifiedOfferingData.thirdHourPsalms = [offeringOptions.thirdHourPsalms];
+    modifiedOfferingData.sixthHourPsalms = [offeringOptions.sixthHourPsalms];
+
+    axios
+      .post(
+        'https://stmarkapi.com:5000/offering?date=' + apiDate,
+        modifiedOfferingData
+      )
+      .then(() => {
+        notifications.show({
+          withCloseButton: true,
+          autoClose: 2000,
+          message: 'Selections Saved',
+          color: 'green',
+        });
+      });
+  };
+
   const handleSubmit = () => {
     // Modified Copy of Offering Data to Post to API
     const modifiedOfferingData = { ...offeringData };
@@ -192,6 +215,7 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/matins')} />
+          <SaveButton onClick={Save} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

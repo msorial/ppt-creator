@@ -11,6 +11,8 @@ import CardHeader from '../components/Reusable/CardHeader';
 import FormField from '../components/Reusable/FormField';
 import SegControl from '../components/Reusable/SegControl';
 import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
+import SaveButton from '../components/Reusable/SaveButton';
 
 export interface WordLiturgyApiProps {
   hymnOfCenser: string;
@@ -99,7 +101,26 @@ const WordLiturgy = () => {
       };
     });
   };
+  const Save = () => {
+    // Modified Copy of Word Data to Post to API
+    const modifiedWordData = { ...wordData };
+    modifiedWordData.paralexHymns = wordOptions.paralex;
+    modifiedWordData.LiturgylitanyoftheGospel = wordOptions.gospelLitany;
 
+    axios
+      .post(
+        'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
+        modifiedWordData
+      )
+      .then(() => {
+        notifications.show({
+          withCloseButton: true,
+          autoClose: 2000,
+          message: 'Selections Saved',
+          color: 'green',
+        });
+      });
+  };
   const handleSubmit = () => {
     // Modified Copy of Word Data to Post to API
     const modifiedWordData = { ...wordData };
@@ -192,6 +213,7 @@ const WordLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/offering')} />
+          <SaveButton onClick={Save} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }
