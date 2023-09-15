@@ -602,7 +602,7 @@ const FaithfulLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/liturgyofWord')} />
-          <SaveButton onClick={Save} />
+          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

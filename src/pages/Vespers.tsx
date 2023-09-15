@@ -123,17 +123,19 @@ const Vespers = () => {
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
-      axios.post(
-        'https://stmarkapi.com:5000/vespers?date=' + apiDate,
-        modifiedVespersData
-      ).then(()=>{
-        notifications.show({
-          withCloseButton: true,
-          autoClose: 2000,
-          message: 'Selections Saved',
-          color: 'green',
+      axios
+        .post(
+          'https://stmarkapi.com:5000/vespers?date=' + apiDate,
+          modifiedVespersData
+        )
+        .then(() => {
+          notifications.show({
+            withCloseButton: true,
+            autoClose: 2000,
+            message: 'Selections Saved',
+            color: 'green',
+          });
         });
-      })
     }
   };
 
@@ -266,7 +268,7 @@ const Vespers = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/')} />
-          <SaveButton onClick={Save} />
+          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

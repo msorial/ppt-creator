@@ -30,7 +30,6 @@ interface CommunionOptionsProps {
 
 const Communion = () => {
   const navigate = useNavigate();
-
   const { apiDate, setSelectedCopticDates } = useDates();
   const [communionData, setCommunionData] = useState<
     CommunionApiProps | undefined

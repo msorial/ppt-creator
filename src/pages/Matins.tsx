@@ -256,7 +256,7 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/vespers')} />
-          <SaveButton onClick={Save} />
+          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

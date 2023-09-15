@@ -213,7 +213,7 @@ const WordLiturgy = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/offering')} />
-          <SaveButton onClick={Save} />
+          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
         </Group>
       }

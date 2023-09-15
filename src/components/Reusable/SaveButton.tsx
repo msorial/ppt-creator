@@ -5,15 +5,17 @@ import useUi from '../../store/useUi';
 
 interface SaveButtonProps {
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-const SaveButton: React.FC<SaveButtonProps> = ({ onClick }) => {
+const SaveButton: React.FC<SaveButtonProps> = ({ onClick, disabled }) => {
   const { darkMode } = useUi();
 
   return (
     <Button
       onClick={onClick}
       variant='outline'
+      disabled={disabled}
       leftIcon={<IconDeviceFloppy size={22} />}
       color={darkMode ? 'gray' : 'lime.7'}
     >
