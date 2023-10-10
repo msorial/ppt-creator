@@ -161,7 +161,7 @@ const JumpButton = () => {
         </Menu.Item>
 
         <Group position='center' sx={{ padding: '10px 10px 8px' }}>
-          <ApprovalButton onClick={handleSubmit} />
+          <ApprovalButton onClick={handleSubmit} size='xs' />
         </Group>
       </Menu.Dropdown>
     </Menu>

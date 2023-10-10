@@ -1,7 +1,6 @@
 import { Button } from '@mantine/core';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import React from 'react';
-import useUi from '../../store/useUi';
 
 interface SaveButtonProps {
   onClick?: () => void;
@@ -9,15 +8,13 @@ interface SaveButtonProps {
 }
 
 const SaveButton: React.FC<SaveButtonProps> = ({ onClick, disabled }) => {
-  const { darkMode } = useUi();
-
   return (
     <Button
       onClick={onClick}
-      variant='outline'
+      variant='light'
       disabled={disabled}
-      leftIcon={<IconDeviceFloppy size={22} />}
-      color={darkMode ? 'gray' : 'lime.7'}
+      leftIcon={<IconDeviceFloppy size={16} />}
+      color='green'
     >
       Save
     </Button>
