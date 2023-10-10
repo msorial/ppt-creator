@@ -53,8 +53,8 @@ const Matins = () => {
     OfferingApiProps | undefined
   >(undefined);
   const [offeringOptions, setOfferingOptions] = useState<OfferingOptionsProps>({
-    thirdHourPsalms: '',
-    sixthHourPsalms: '',
+    thirdHourPsalms: 'powerpoints/agpeya/3rd hour psalms/psalm 19.pptx',
+    sixthHourPsalms: 'powerpoints/agpeya/6th hour psalms/psalm 56.pptx',
   });
   const [disabled, setDisabled] = useState<boolean>(true);
 
@@ -215,8 +215,8 @@ const Matins = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/matins')} />
-          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
+          <SaveButton onClick={Save} disabled={disabled} />
         </Group>
       }
     />

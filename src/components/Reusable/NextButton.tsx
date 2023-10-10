@@ -10,9 +10,10 @@ const NextButton: React.FC<NextButtonProps> = ({ onClick, disabled }) => {
   return (
     <Button
       onClick={onClick}
+      variant='light'
       disabled={disabled}
       rightIcon={<IconChevronRight size={14} />}
-      color='teal'
+      color='blue'
     >
       Next
     </Button>

@@ -11,10 +11,9 @@ const SaveButton: React.FC<SaveButtonProps> = ({ onClick, disabled }) => {
   return (
     <Button
       onClick={onClick}
-      variant='light'
       disabled={disabled}
       leftIcon={<IconDeviceFloppy size={16} />}
-      color='green'
+      color='teal'
     >
       Save
     </Button>

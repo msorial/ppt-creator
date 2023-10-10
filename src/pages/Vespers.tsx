@@ -268,8 +268,8 @@ const Vespers = () => {
       footer={
         <Group>
           <BackButton onClick={() => navigate('/')} />
-          <SaveButton onClick={Save} disabled={disabled} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
+          <SaveButton onClick={Save} disabled={disabled} />
         </Group>
       }
     />
