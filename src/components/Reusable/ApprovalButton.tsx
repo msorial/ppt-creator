@@ -13,6 +13,7 @@ const ApprovalButton: React.FC<ApprovalButtonProps> = ({ onClick, size }) => {
       onClick={onClick}
       rightIcon={<IconMailForward size={14} />}
       size={size}
+      color='teal'
     >
       Submit For Approval
     </Button>
