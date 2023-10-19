@@ -16,6 +16,7 @@ import { notifications } from '@mantine/notifications';
 import SaveButton from '../components/Reusable/SaveButton';
 
 export interface VespersApiProps {
+  bishop: string;
   Vespers: string;
   vespersPrayerofThanksgiving: string;
   vespersVerseofTheCymbals: string;
@@ -38,6 +39,7 @@ export interface VespersApiProps {
 }
 
 interface VespersOptionsProps {
+  bishop: string;
   doxologies: string[];
   gospelLitany: string;
   fiveLitanies: string;
@@ -50,6 +52,7 @@ const Vespers = () => {
     undefined
   );
   const [vesperOptions, setVesperOptions] = useState<VespersOptionsProps>({
+    bishop: 'no',
     doxologies: [],
     gospelLitany: 'standard',
     fiveLitanies: 'no',
@@ -64,6 +67,7 @@ const Vespers = () => {
         if (data?.status !== 'No PPT For this date') {
           setVesperOptions({
             ...vesperOptions,
+            bishop: data?.bishop,
             doxologies: data?.seasonVespersDoxologies,
             gospelLitany: data?.vespersLitanyofTheGospel,
             fiveLitanies: data?.vespers5ShortLitanies,
@@ -119,6 +123,7 @@ const Vespers = () => {
     } else {
       // Modified Copy of Vespers Data to Post to API
       const modifiedVespersData = { ...vespersData };
+      modifiedVespersData.bishop = vesperOptions.bishop;
       modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
@@ -150,6 +155,7 @@ const Vespers = () => {
     } else {
       // Modified Copy of Vespers Data to Post to API
       const modifiedVespersData = { ...vespersData };
+      modifiedVespersData.bishop = vesperOptions.bishop;
       modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
@@ -187,9 +193,16 @@ const Vespers = () => {
                 options={
                   <SegControl
                     data={[
-                      { label: 'No', value: 'ng' },
+                      { label: 'No', value: 'no' },
                       { label: 'Yes', value: 'yes' },
                     ]}
+                    value={vesperOptions.bishop}
+                    onChange={(value: string) =>
+                      setVesperOptions({
+                        ...vesperOptions,
+                        bishop: value,
+                      })
+                    }
                   />
                 }
               />
