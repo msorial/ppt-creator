@@ -1,17 +1,18 @@
-import { Flex, Group, Select, Skeleton } from '@mantine/core';
-import NextButton from '../components/Reusable/NextButton';
-import FormCard from '../components/Reusable/FormCard';
-import PageLayout from '../components/Layout/PageLayout';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useDates from '../store/useDates';
-import BackButton from '../components/Reusable/BackButton';
-import CardHeader from '../components/Reusable/CardHeader';
-import FormField from '../components/Reusable/FormField';
-import FormHeader from '../components/Reusable/FormHeader';
-import { notifications } from '@mantine/notifications';
-import SaveButton from '../components/Reusable/SaveButton';
+import { Flex, Group, Select, Skeleton } from "@mantine/core";
+import NextButton from "../components/Reusable/NextButton";
+import FormCard from "../components/Reusable/FormCard";
+import PageLayout from "../components/Layout/PageLayout";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useDates from "../store/useDates";
+import BackButton from "../components/Reusable/BackButton";
+import CardHeader from "../components/Reusable/CardHeader";
+import FormField from "../components/Reusable/FormField";
+import FormHeader from "../components/Reusable/FormHeader";
+import { notifications } from "@mantine/notifications";
+import SaveButton from "../components/Reusable/SaveButton";
+import { IconCheck } from "@tabler/icons-react";
 
 export interface OfferingApiProps {
   transitionSlide: string;
@@ -53,17 +54,17 @@ const Matins = () => {
     OfferingApiProps | undefined
   >(undefined);
   const [offeringOptions, setOfferingOptions] = useState<OfferingOptionsProps>({
-    thirdHourPsalms: 'powerpoints/agpeya/3rd hour psalms/psalm 19.pptx',
-    sixthHourPsalms: 'powerpoints/agpeya/6th hour psalms/psalm 56.pptx',
+    thirdHourPsalms: "powerpoints/agpeya/3rd hour psalms/psalm 19.pptx",
+    sixthHourPsalms: "powerpoints/agpeya/6th hour psalms/psalm 56.pptx",
   });
   const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('https://stmarkapi.com:5000/offering?date=' + apiDate)
+    fetch("https://stmarkapi.com:5000/offering?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
-        if (data?.status !== 'No PPT For this date') {
+        if (data?.status !== "No PPT For this date") {
           setOfferingOptions({
             ...offeringOptions,
             thirdHourPsalms: data.thirdHourPsalms[0],
@@ -72,13 +73,13 @@ const Matins = () => {
         }
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('https://stmarkapi.com:8080/offering?date=' + apiDate)
+    fetch("https://stmarkapi.com:8080/offering?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -88,21 +89,21 @@ const Matins = () => {
         setPsalmsObject({
           thirdHourPsalms: data[1].thirdHourPsalms.map((path: string) => ({
             value: path,
-            label: path.split('/').slice(-1)[0].split('.')[0],
+            label: path.split("/").slice(-1)[0].split(".")[0],
           })),
           sixthHourPsalms: data[1].sixthHourPsalms.map((path: string) => ({
             value: path,
-            label: path.split('/').slice(-1)[0].split('.')[0],
+            label: path.split("/").slice(-1)[0].split(".")[0],
           })),
         });
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
   const handleChange = (
-    psalmType: 'thirdHourPsalms' | 'sixthHourPsalms',
+    psalmType: "thirdHourPsalms" | "sixthHourPsalms",
     newValue: string
   ) => {
     setOfferingOptions((prevOptions) => ({
@@ -112,6 +113,14 @@ const Matins = () => {
   };
 
   const Save = () => {
+    notifications.show({
+      withCloseButton: true,
+      autoClose: 2000,
+      message: "Selections Saving",
+      color: "blue",
+      loading: true,
+      id: "save",
+    });
     // Modified Copy of Offering Data to Post to API
     const modifiedOfferingData = { ...offeringData };
     modifiedOfferingData.thirdHourPsalms = [offeringOptions.thirdHourPsalms];
@@ -119,15 +128,17 @@ const Matins = () => {
 
     axios
       .post(
-        'https://stmarkapi.com:5000/offering?date=' + apiDate,
+        "https://stmarkapi.com:5000/offering?date=" + apiDate,
         modifiedOfferingData
       )
       .then(() => {
-        notifications.show({
+        notifications.update({
           withCloseButton: true,
           autoClose: 2000,
-          message: 'Selections Saved',
-          color: 'green',
+          message: "Selections Saved",
+          color: "green",
+          icon: <IconCheck />,
+          id: "save",
         });
       });
   };
@@ -140,14 +151,14 @@ const Matins = () => {
 
     axios
       .post(
-        'https://stmarkapi.com:5000/offering?date=' + apiDate,
+        "https://stmarkapi.com:5000/offering?date=" + apiDate,
         modifiedOfferingData
       )
       .then(() => {
-        navigate('/liturgyofWord');
+        navigate("/liturgyofWord");
       })
       .catch((error) => {
-        console.error('Error submitting data:', error);
+        console.error("Error submitting data:", error);
       });
   };
 
@@ -158,52 +169,52 @@ const Matins = () => {
         <FormCard
           content={
             <Flex
-              gap='xl'
-              justify='center'
-              align='flex-start'
-              direction='column'
+              gap="xl"
+              justify="center"
+              align="flex-start"
+              direction="column"
             >
-              <CardHeader header='Offering' />
+              <CardHeader header="Offering" />
 
               <FormField
-                title='3rd Hour Psalm'
+                title="3rd Hour Psalm"
                 options={
                   psalmsObject.thirdHourPsalms.length === 0 ? (
-                    <Skeleton height={20} mt={5} width='100%' radius='md' />
+                    <Skeleton height={20} mt={5} width="100%" radius="md" />
                   ) : (
                     <Select
                       value={
                         offeringOptions.thirdHourPsalms
                           ? offeringOptions.thirdHourPsalms
-                          : 'powerpoints/agpeya/3rd hour psalms/psalm 19.pptx'
+                          : "powerpoints/agpeya/3rd hour psalms/psalm 19.pptx"
                       }
                       onChange={(value: string) =>
-                        handleChange('thirdHourPsalms', value)
+                        handleChange("thirdHourPsalms", value)
                       }
                       data={psalmsObject.thirdHourPsalms}
-                      sx={{ width: '100%' }}
+                      sx={{ width: "100%" }}
                     />
                   )
                 }
               />
 
               <FormField
-                title='6th Hour Psalm'
+                title="6th Hour Psalm"
                 options={
                   psalmsObject.sixthHourPsalms.length === 0 ? (
-                    <Skeleton height={20} mt={5} width='100%' radius='md' />
+                    <Skeleton height={20} mt={5} width="100%" radius="md" />
                   ) : (
                     <Select
                       value={
                         offeringOptions.sixthHourPsalms
                           ? offeringOptions.sixthHourPsalms
-                          : 'powerpoints/agpeya/6th hour psalms/psalm 56.pptx'
+                          : "powerpoints/agpeya/6th hour psalms/psalm 56.pptx"
                       }
                       onChange={(value: string) =>
-                        handleChange('sixthHourPsalms', value)
+                        handleChange("sixthHourPsalms", value)
                       }
                       data={psalmsObject.sixthHourPsalms}
-                      sx={{ width: '100%' }}
+                      sx={{ width: "100%" }}
                     />
                   )
                 }
@@ -214,7 +225,7 @@ const Matins = () => {
       }
       footer={
         <Group>
-          <BackButton onClick={() => navigate('/matins')} />
+          <BackButton onClick={() => navigate("/matins")} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
           <SaveButton onClick={Save} disabled={disabled} />
         </Group>

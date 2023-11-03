@@ -1,18 +1,19 @@
-import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
-import NextButton from '../components/Reusable/NextButton';
-import FormCard from '../components/Reusable/FormCard';
-import PageLayout from '../components/Layout/PageLayout';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useDates from '../store/useDates';
-import BackButton from '../components/Reusable/BackButton';
-import CardHeader from '../components/Reusable/CardHeader';
-import FormField from '../components/Reusable/FormField';
-import SegControl from '../components/Reusable/SegControl';
-import FormHeader from '../components/Reusable/FormHeader';
-import { notifications } from '@mantine/notifications';
-import SaveButton from '../components/Reusable/SaveButton';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from "@mantine/core";
+import NextButton from "../components/Reusable/NextButton";
+import FormCard from "../components/Reusable/FormCard";
+import PageLayout from "../components/Layout/PageLayout";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useDates from "../store/useDates";
+import BackButton from "../components/Reusable/BackButton";
+import CardHeader from "../components/Reusable/CardHeader";
+import FormField from "../components/Reusable/FormField";
+import SegControl from "../components/Reusable/SegControl";
+import FormHeader from "../components/Reusable/FormHeader";
+import { notifications } from "@mantine/notifications";
+import SaveButton from "../components/Reusable/SaveButton";
+import { IconCheck } from "@tabler/icons-react";
 
 export interface WordLiturgyApiProps {
   hymnOfCenser: string;
@@ -46,16 +47,16 @@ const WordLiturgy = () => {
   );
   const [wordOptions, setWordOptions] = useState<WordLiturgyOptionsProps>({
     paralex: [],
-    gospelLitany: 'alternate',
+    gospelLitany: "alternate",
   });
   const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate)
+    fetch("https://stmarkapi.com:5000/liturgyOfWord?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
-        if (data?.status !== 'No PPT For this date') {
+        if (data?.status !== "No PPT For this date") {
           setWordOptions({
             ...wordOptions,
             paralex: data?.paralexHymns,
@@ -64,13 +65,13 @@ const WordLiturgy = () => {
         }
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('https://stmarkapi.com:8080/liturgyOfWord?date=' + apiDate)
+    fetch("https://stmarkapi.com:8080/liturgyOfWord?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -78,7 +79,7 @@ const WordLiturgy = () => {
         setDisabled(false);
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
@@ -102,6 +103,14 @@ const WordLiturgy = () => {
     });
   };
   const Save = () => {
+    notifications.show({
+      withCloseButton: true,
+      autoClose: 2000,
+      message: "Selections Saving",
+      color: "blue",
+      loading: true,
+      id: "save",
+    });
     // Modified Copy of Word Data to Post to API
     const modifiedWordData = { ...wordData };
     modifiedWordData.paralexHymns = wordOptions.paralex;
@@ -109,15 +118,17 @@ const WordLiturgy = () => {
 
     axios
       .post(
-        'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
+        "https://stmarkapi.com:5000/liturgyOfWord?date=" + apiDate,
         modifiedWordData
       )
       .then(() => {
-        notifications.show({
+        notifications.update({
           withCloseButton: true,
           autoClose: 2000,
-          message: 'Selections Saved',
-          color: 'green',
+          message: "Selections Saved",
+          color: "green",
+          icon: <IconCheck />,
+          id: "save",
         });
       });
   };
@@ -129,14 +140,14 @@ const WordLiturgy = () => {
 
     axios
       .post(
-        'https://stmarkapi.com:5000/liturgyOfWord?date=' + apiDate,
+        "https://stmarkapi.com:5000/liturgyOfWord?date=" + apiDate,
         modifiedWordData
       )
       .then(() => {
         navigate(`/liturgyOfFaithful`);
       })
       .catch((error) => {
-        console.error('Error submitting data:', error);
+        console.error("Error submitting data:", error);
       });
   };
 
@@ -147,16 +158,16 @@ const WordLiturgy = () => {
         <FormCard
           content={
             <Flex
-              gap='xl'
-              justify='center'
-              align='flex-start'
-              direction='column'
+              gap="xl"
+              justify="center"
+              align="flex-start"
+              direction="column"
             >
-              <CardHeader header='Liturgy of the Word' />
+              <CardHeader header="Liturgy of the Word" />
 
               {wordData?.paralexHymns && wordData.paralexHymns.length !== 0 ? (
-                <Stack align='flex-start' spacing={5}>
-                  <Text fz='md' fw={500}>
+                <Stack align="flex-start" spacing={5}>
+                  <Text fz="md" fw={500}>
                     Paralex Hymns
                   </Text>
 
@@ -164,12 +175,12 @@ const WordLiturgy = () => {
                     ? wordData?.paralexHymns.map(
                         (item: string, index: number) => (
                           <Checkbox
-                            mt='sm'
+                            mt="sm"
                             key={index}
                             value={item}
                             checked={wordOptions.paralex.includes(item)}
                             onChange={handleCheckboxChange}
-                            label={item.split('/').slice(-1)[0].split('.')[0]}
+                            label={item.split("/").slice(-1)[0].split(".")[0]}
                             transitionDuration={0}
                           />
                         )
@@ -181,7 +192,7 @@ const WordLiturgy = () => {
                           width={
                             Math.floor(Math.random() * (100 - 75 + 1)) + 75
                           }
-                          radius='sm'
+                          radius="sm"
                           key={index}
                         />
                       ))}
@@ -189,12 +200,12 @@ const WordLiturgy = () => {
               ) : null}
 
               <FormField
-                title='Litany of the Gospel'
+                title="Litany of the Gospel"
                 options={
                   <SegControl
                     data={[
-                      { label: 'Alternate', value: 'alternate' },
-                      { label: 'Standard', value: 'standard' },
+                      { label: "Alternate", value: "alternate" },
+                      { label: "Standard", value: "standard" },
                     ]}
                     value={wordOptions.gospelLitany}
                     onChange={(value: string) =>
@@ -212,7 +223,7 @@ const WordLiturgy = () => {
       }
       footer={
         <Group>
-          <BackButton onClick={() => navigate('/offering')} />
+          <BackButton onClick={() => navigate("/offering")} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
           <SaveButton onClick={Save} disabled={disabled} />
         </Group>

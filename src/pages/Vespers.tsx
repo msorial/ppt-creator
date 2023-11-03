@@ -1,19 +1,20 @@
-import { Checkbox, Flex, Group, Skeleton, Stack, Text } from '@mantine/core';
-import NextButton from '../components/Reusable/NextButton';
-import FormCard from '../components/Reusable/FormCard';
-import PageLayout from '../components/Layout/PageLayout';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useDates from '../store/useDates';
-import BackButton from '../components/Reusable/BackButton';
-import CardHeader from '../components/Reusable/CardHeader';
-import FormField from '../components/Reusable/FormField';
-import SegControl from '../components/Reusable/SegControl';
-import FormHeader from '../components/Reusable/FormHeader';
-import { hasEmptyValues } from '../lib/functions/hasEmptyValue';
-import { notifications } from '@mantine/notifications';
-import SaveButton from '../components/Reusable/SaveButton';
+import { Checkbox, Flex, Group, Skeleton, Stack, Text } from "@mantine/core";
+import NextButton from "../components/Reusable/NextButton";
+import FormCard from "../components/Reusable/FormCard";
+import PageLayout from "../components/Layout/PageLayout";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useDates from "../store/useDates";
+import BackButton from "../components/Reusable/BackButton";
+import CardHeader from "../components/Reusable/CardHeader";
+import FormField from "../components/Reusable/FormField";
+import SegControl from "../components/Reusable/SegControl";
+import FormHeader from "../components/Reusable/FormHeader";
+import { hasEmptyValues } from "../lib/functions/hasEmptyValue";
+import { notifications } from "@mantine/notifications";
+import SaveButton from "../components/Reusable/SaveButton";
+import { IconCheck } from "@tabler/icons-react";
 
 export interface VespersApiProps {
   bishop: string;
@@ -52,19 +53,19 @@ const Vespers = () => {
     undefined
   );
   const [vesperOptions, setVesperOptions] = useState<VespersOptionsProps>({
-    bishop: 'no',
+    bishop: "no",
     doxologies: [],
-    gospelLitany: 'standard',
-    fiveLitanies: 'no',
+    gospelLitany: "standard",
+    fiveLitanies: "no",
   });
   const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch('https://stmarkapi.com:5000/vespers?date=' + apiDate)
+    fetch("https://stmarkapi.com:5000/vespers?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
-        if (data?.status !== 'No PPT For this date') {
+        if (data?.status !== "No PPT For this date") {
           setVesperOptions({
             ...vesperOptions,
             bishop: data?.bishop,
@@ -75,13 +76,13 @@ const Vespers = () => {
         }
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch('https://stmarkapi.com:8080/vespers?date=' + apiDate)
+    fetch("https://stmarkapi.com:8080/vespers?date=" + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -89,7 +90,7 @@ const Vespers = () => {
         setDisabled(false);
       })
       .catch((error) => {
-        console.error('Error fetching API data:', error);
+        console.error("Error fetching API data:", error);
       });
   }, []);
 
@@ -117,11 +118,20 @@ const Vespers = () => {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
-        message: 'Please fill in all options',
-        color: 'red',
+        message: "Please fill in all options",
+        color: "red",
       });
     } else {
       // Modified Copy of Vespers Data to Post to API
+      notifications.show({
+        withCloseButton: true,
+        autoClose: 2000,
+        message: "Selections Saving",
+        color: "blue",
+        loading: true,
+        id: "save",
+      });
+      console.log("This message will be logged immediately.");
       const modifiedVespersData = { ...vespersData };
       modifiedVespersData.bishop = vesperOptions.bishop;
       modifiedVespersData.seasonVespersDoxologies = vesperOptions.doxologies;
@@ -130,15 +140,17 @@ const Vespers = () => {
 
       axios
         .post(
-          'https://stmarkapi.com:5000/vespers?date=' + apiDate,
+          "https://stmarkapi.com:5000/vespers?date=" + apiDate,
           modifiedVespersData
         )
         .then(() => {
-          notifications.show({
+          notifications.update({
             withCloseButton: true,
             autoClose: 2000,
-            message: 'Selections Saved',
-            color: 'green',
+            message: "Selections Saved",
+            color: "green",
+            icon: <IconCheck />,
+            id: "save",
           });
         });
     }
@@ -149,8 +161,8 @@ const Vespers = () => {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
-        message: 'Please fill in all options',
-        color: 'red',
+        message: "Please fill in all options",
+        color: "red",
       });
     } else {
       // Modified Copy of Vespers Data to Post to API
@@ -162,14 +174,14 @@ const Vespers = () => {
 
       axios
         .post(
-          'https://stmarkapi.com:5000/vespers?date=' + apiDate,
+          "https://stmarkapi.com:5000/vespers?date=" + apiDate,
           modifiedVespersData
         )
         .then(() => {
           navigate(`/matins`);
         })
         .catch((error) => {
-          console.error('Error submitting data:', error);
+          console.error("Error submitting data:", error);
         });
     }
   };
@@ -181,20 +193,20 @@ const Vespers = () => {
         <FormCard
           content={
             <Flex
-              gap='xl'
-              justify='center'
-              align='flex-start'
-              direction='column'
+              gap="xl"
+              justify="center"
+              align="flex-start"
+              direction="column"
             >
-              <CardHeader header='Vespers' />
+              <CardHeader header="Vespers" />
 
               <FormField
-                title='Bishop Present'
+                title="Bishop Present"
                 options={
                   <SegControl
                     data={[
-                      { label: 'No', value: 'no' },
-                      { label: 'Yes', value: 'yes' },
+                      { label: "No", value: "no" },
+                      { label: "Yes", value: "yes" },
                     ]}
                     value={vesperOptions.bishop}
                     onChange={(value: string) =>
@@ -207,8 +219,8 @@ const Vespers = () => {
                 }
               />
 
-              <Stack align='flex-start' spacing={5}>
-                <Text fz='md' fw={500}>
+              <Stack align="flex-start" spacing={5}>
+                <Text fz="md" fw={500}>
                   Seasonal Vespers Doxologies
                 </Text>
 
@@ -216,12 +228,12 @@ const Vespers = () => {
                   ? vespersData?.seasonVespersDoxologies.map(
                       (item: string, index: number) => (
                         <Checkbox
-                          mt='sm'
+                          mt="sm"
                           key={index}
                           value={item}
                           checked={vesperOptions.doxologies.includes(item)}
                           onChange={handleCheckboxChange}
-                          label={item.split('/').slice(-1)[0].split('.')[0]}
+                          label={item.split("/").slice(-1)[0].split(".")[0]}
                           transitionDuration={0}
                         />
                       )
@@ -231,19 +243,19 @@ const Vespers = () => {
                         height={20}
                         mt={5}
                         width={Math.floor(Math.random() * (100 - 75 + 1)) + 75}
-                        radius='md'
+                        radius="md"
                         key={index}
                       />
                     ))}
               </Stack>
 
               <FormField
-                title='Litany of the Gospel'
+                title="Litany of the Gospel"
                 options={
                   <SegControl
                     data={[
-                      { label: 'Standard', value: 'standard' },
-                      { label: 'Alternate', value: 'alternate' },
+                      { label: "Standard", value: "standard" },
+                      { label: "Alternate", value: "alternate" },
                     ]}
                     value={vesperOptions.gospelLitany}
                     onChange={(value: string) =>
@@ -257,12 +269,12 @@ const Vespers = () => {
               />
 
               <FormField
-                title='Five Short Litanies'
+                title="Five Short Litanies"
                 options={
                   <SegControl
                     data={[
-                      { label: 'No', value: 'no' },
-                      { label: 'Yes', value: 'yes' },
+                      { label: "No", value: "no" },
+                      { label: "Yes", value: "yes" },
                     ]}
                     value={vesperOptions.fiveLitanies}
                     onChange={(value: string) =>
@@ -280,7 +292,7 @@ const Vespers = () => {
       }
       footer={
         <Group>
-          <BackButton onClick={() => navigate('/')} />
+          <BackButton onClick={() => navigate("/")} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
           <SaveButton onClick={Save} disabled={disabled} />
         </Group>
