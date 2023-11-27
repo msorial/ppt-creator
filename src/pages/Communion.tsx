@@ -98,7 +98,6 @@ const Communion = () => {
   const Save = () => {
     notifications.show({
       withCloseButton: true,
-      autoClose: 2000,
       message: "Selections Saving",
       color: "blue",
       loading: true,

@@ -125,7 +125,6 @@ const Vespers = () => {
       // Modified Copy of Vespers Data to Post to API
       notifications.show({
         withCloseButton: true,
-        autoClose: 2000,
         message: "Selections Saving",
         color: "blue",
         loading: true,

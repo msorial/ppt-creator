@@ -227,7 +227,6 @@ const FaithfulLiturgy = () => {
         .then(() => {
           notifications.update({
             withCloseButton: true,
-            autoClose: 2000,
             message: "Selections Saved",
             color: "green",
             icon: <IconCheck />,

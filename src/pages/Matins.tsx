@@ -120,7 +120,6 @@ const Matins = () => {
     } else {
       notifications.show({
         withCloseButton: true,
-        autoClose: 2000,
         message: "Selections Saving",
         color: "blue",
         loading: true,
