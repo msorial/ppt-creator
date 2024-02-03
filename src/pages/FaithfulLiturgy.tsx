@@ -1,19 +1,19 @@
-import { Flex, Group, Radio, Select, Skeleton } from "@mantine/core";
-import NextButton from "../components/Reusable/NextButton";
-import FormCard from "../components/Reusable/FormCard";
-import PageLayout from "../components/Layout/PageLayout";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import useDates from "../store/useDates";
-import BackButton from "../components/Reusable/BackButton";
-import CardHeader from "../components/Reusable/CardHeader";
-import FormField from "../components/Reusable/FormField";
-import SegControl from "../components/Reusable/SegControl";
-import FormHeader from "../components/Reusable/FormHeader";
-import { notifications } from "@mantine/notifications";
-import SaveButton from "../components/Reusable/SaveButton";
-import { IconCheck } from "@tabler/icons-react";
+import { Flex, Group, Select, Skeleton } from '@mantine/core';
+import NextButton from '../components/Reusable/NextButton';
+import FormCard from '../components/Reusable/FormCard';
+import PageLayout from '../components/Layout/PageLayout';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import useDates from '../store/useDates';
+import BackButton from '../components/Reusable/BackButton';
+import CardHeader from '../components/Reusable/CardHeader';
+import FormField from '../components/Reusable/FormField';
+import SegControl from '../components/Reusable/SegControl';
+import FormHeader from '../components/Reusable/FormHeader';
+import { notifications } from '@mantine/notifications';
+import SaveButton from '../components/Reusable/SaveButton';
+import { IconCheck } from '@tabler/icons-react';
 
 export interface FaithfulLiturgyApiProps {
   Liturgy3GreatLitanies: string;
@@ -81,31 +81,31 @@ const FaithfulLiturgy = () => {
   >(undefined);
   const [faithfulOptions, setFaithfulOptions] =
     useState<FaithfulLiturgysOptionsProps>({
-      threeLitanies: "no",
+      threeLitanies: 'no',
       reconcilePrayer:
-        "powerpoints/liturgy/reconciliation prayers/o god the great the eternal.pptx",
-      rejoiceOMary: "no",
-      anaphora: "basil",
-      OLordofHosts: "no",
-      agios: "basil",
-      instiution: "basil",
-      yeahWeAskYou: "no",
-      jeNaiNan: "no",
-      healingToTheSick: "no",
-      commemoration: "basil",
-      postCommemoration: "basil",
-      fractionIntro: "basil",
-      seasonalFraction: "",
-      standardFraction: "",
+        'powerpoints/liturgy/reconciliation prayers/o god the great the eternal.pptx',
+      rejoiceOMary: 'no',
+      anaphora: 'basil',
+      OLordofHosts: 'no',
+      agios: 'basil',
+      instiution: 'basil',
+      yeahWeAskYou: 'no',
+      jeNaiNan: 'no',
+      healingToTheSick: 'no',
+      commemoration: 'basil',
+      postCommemoration: 'basil',
+      fractionIntro: 'basil',
+      seasonalFraction: '',
+      standardFraction: '',
     });
   const [disabled, setDisabled] = useState<boolean>(true);
 
   // This useEffect returns selections previously made
   useEffect(() => {
-    fetch("https://stmarkapi.com:5000/liturgyOfFaithful?date=" + apiDate)
+    fetch('https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
-        if (data?.status !== "No PPT For this date") {
+        if (data?.status !== 'No PPT For this date') {
           setFaithfulOptions({
             ...faithfulOptions,
             threeLitanies: data?.Liturgy3GreatLitanies,
@@ -127,13 +127,13 @@ const FaithfulLiturgy = () => {
         }
       })
       .catch((error) => {
-        console.error("Error fetching API data:", error);
+        console.error('Error fetching API data:', error);
       });
   }, []);
 
   // This useEffect returns ALL options for that given date
   useEffect(() => {
-    fetch("https://stmarkapi.com:8080/liturgyOfFaithful?date=" + apiDate)
+    fetch('https://stmarkapi.com:8080/liturgyOfFaithful?date=' + apiDate)
       .then((response) => response.json())
       .then((data) => {
         setSelectedCopticDates(data[0]);
@@ -143,16 +143,16 @@ const FaithfulLiturgy = () => {
         setFractionObject({
           seasonalFractions: data[1].seasonalFraction.map((path: string) => ({
             value: path,
-            label: path.split("/").slice(-1)[0].split(".")[0],
+            label: path.split('/').slice(-1)[0].split('.')[0],
           })),
           standardFractions: data[1].fractionIndex.map((path: string) => ({
             value: path,
-            label: path.split("/").slice(-1)[0].split(".")[0],
+            label: path.split('/').slice(-1)[0].split('.')[0],
           })),
         });
       })
       .catch((error) => {
-        console.error("Error fetching API data:", error);
+        console.error('Error fetching API data:', error);
       });
   }, []);
 
@@ -161,10 +161,11 @@ const FaithfulLiturgy = () => {
       ...prevOptions,
       reconcilePrayer: value,
     }));
+    console.log(faithfulOptions.reconcilePrayer);
   };
 
   const handleFractionChange = (
-    fraction: "seasonalFraction" | "standardFraction",
+    fraction: 'seasonalFraction' | 'standardFraction',
     newValue: string
   ) => {
     setFaithfulOptions((prevOptions) => ({
@@ -175,25 +176,25 @@ const FaithfulLiturgy = () => {
 
   const Save = () => {
     if (
-      (faithfulOptions.seasonalFraction === "" ||
+      (faithfulOptions.seasonalFraction === '' ||
         faithfulOptions.seasonalFraction === null) &&
-      (faithfulOptions.standardFraction === "" ||
+      (faithfulOptions.standardFraction === '' ||
         faithfulOptions.standardFraction === null)
     ) {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
-        message: "Please pick a fraction",
-        color: "red",
+        message: 'Please pick a fraction',
+        color: 'red',
       });
     } else {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
-        message: "Selections Saving",
-        color: "blue",
+        message: 'Selections Saving',
+        color: 'blue',
         loading: true,
-        id: "save",
+        id: 'save',
       });
       // Modified Copy of Faithful Data to Post to API
       const modifiedFaithfulData = { ...faithfulData };
@@ -221,16 +222,16 @@ const FaithfulLiturgy = () => {
 
       axios
         .post(
-          "https://stmarkapi.com:5000/liturgyOfFaithful?date=" + apiDate,
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
           modifiedFaithfulData
         )
         .then(() => {
           notifications.update({
             withCloseButton: true,
-            message: "Selections Saved",
-            color: "green",
+            message: 'Selections Saved',
+            color: 'green',
             icon: <IconCheck />,
-            id: "save",
+            id: 'save',
           });
         });
     }
@@ -238,16 +239,16 @@ const FaithfulLiturgy = () => {
 
   const handleSubmit = () => {
     if (
-      (faithfulOptions.seasonalFraction === "" ||
+      (faithfulOptions.seasonalFraction === '' ||
         faithfulOptions.seasonalFraction === null) &&
-      (faithfulOptions.standardFraction === "" ||
+      (faithfulOptions.standardFraction === '' ||
         faithfulOptions.standardFraction === null)
     ) {
       notifications.show({
         withCloseButton: true,
         autoClose: 2000,
-        message: "Please pick a fraction",
-        color: "red",
+        message: 'Please pick a fraction',
+        color: 'red',
       });
     } else {
       // Modified Copy of Faithful Data to Post to API
@@ -276,14 +277,14 @@ const FaithfulLiturgy = () => {
 
       axios
         .post(
-          "https://stmarkapi.com:5000/liturgyOfFaithful?date=" + apiDate,
+          'https://stmarkapi.com:5000/liturgyOfFaithful?date=' + apiDate,
           modifiedFaithfulData
         )
         .then(() => {
           navigate(`/communion`);
         })
         .catch((error) => {
-          console.error("Error submitting data:", error);
+          console.error('Error submitting data:', error);
         });
     }
   };
@@ -295,20 +296,20 @@ const FaithfulLiturgy = () => {
         <FormCard
           content={
             <Flex
-              gap="xl"
-              justify="center"
-              align="flex-start"
-              direction="column"
+              gap='xl'
+              justify='center'
+              align='flex-start'
+              direction='column'
             >
-              <CardHeader header="Liturgy of the Faithful" />
+              <CardHeader header='Liturgy of the Faithful' />
 
               <FormField
-                title="Three Long Litanies"
+                title='Three Long Litanies'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.threeLitanies}
                     onChange={(value: string) =>
@@ -322,45 +323,36 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Reconciliation Prayer"
+                title='Reconciliation Prayer'
                 options={
-                  <Radio.Group
+                  <Select
+                    placeholder='Select Reconciliation Prayer'
                     value={faithfulOptions.reconcilePrayer}
                     onChange={handleRadioChange}
-                  >
-                    {faithfulData?.prayerOfReconcilation
-                      ? faithfulData?.prayerOfReconcilation.map(
-                          (item: string, index: number) => (
-                            <Radio
-                              mt="sm"
-                              label={item.split("/").slice(-1)[0].split(".")[0]}
-                              value={item}
-                              key={index}
-                            />
+                    data={
+                      faithfulData?.prayerOfReconcilation
+                        ? faithfulData?.prayerOfReconcilation.map(
+                            (item: string) => ({
+                              value: item,
+                              label: item.split('/').slice(-1)[0].split('.')[0],
+                            })
                           )
-                        )
-                      : [1, 2, 3, 4].map((index: number) => (
-                          <Skeleton
-                            height={20}
-                            mt={5}
-                            width={
-                              Math.floor(Math.random() * (100 - 75 + 1)) + 75
-                            }
-                            radius="md"
-                            key={index}
-                          />
-                        ))}
-                  </Radio.Group>
+                        : []
+                    }
+                    clearable
+                    searchable
+                    sx={{ width: '100%' }}
+                  />
                 }
               />
 
               <FormField
-                title="Rejoice O Mary"
+                title='Rejoice O Mary'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.rejoiceOMary}
                     onChange={(value: string) =>
@@ -374,12 +366,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Anaphora"
+                title='Anaphora'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.anaphora}
                     onChange={(value: string) =>
@@ -393,12 +385,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="O Lord of Hosts"
+                title='O Lord of Hosts'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.OLordofHosts}
                     onChange={(value: string) =>
@@ -412,12 +404,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Agios"
+                title='Agios'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.agios}
                     onChange={(value: string) =>
@@ -431,12 +423,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Institution Narrative"
+                title='Institution Narrative'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.instiution}
                     onChange={(value: string) =>
@@ -450,12 +442,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Yes We Ask You"
+                title='Yes We Ask You'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.yeahWeAskYou}
                     onChange={(value: string) =>
@@ -469,12 +461,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Je Nai Nan"
+                title='Je Nai Nan'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.jeNaiNan}
                     onChange={(value: string) =>
@@ -487,12 +479,12 @@ const FaithfulLiturgy = () => {
                 }
               />
               <FormField
-                title="Healing to the Sick"
+                title='Healing to the Sick'
                 options={
                   <SegControl
                     data={[
-                      { label: "No", value: "no" },
-                      { label: "Yes", value: "yes" },
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
                     ]}
                     value={faithfulOptions.healingToTheSick}
                     onChange={(value: string) =>
@@ -506,12 +498,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Commemoration"
+                title='Commemoration'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.commemoration}
                     onChange={(value: string) =>
@@ -525,12 +517,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Post Commemoration"
+                title='Post Commemoration'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.postCommemoration}
                     onChange={(value: string) =>
@@ -544,12 +536,12 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Intro to the Fraction"
+                title='Intro to the Fraction'
                 options={
                   <SegControl
                     data={[
-                      { label: "Basil", value: "basil" },
-                      { label: "Gregory", value: "gregory" },
+                      { label: 'Basil', value: 'basil' },
+                      { label: 'Gregory', value: 'gregory' },
                     ]}
                     value={faithfulOptions.fractionIntro}
                     onChange={(value: string) =>
@@ -563,44 +555,44 @@ const FaithfulLiturgy = () => {
               />
 
               <FormField
-                title="Seasonal Fractions"
+                title='Seasonal Fractions'
                 options={
                   fractionObject.seasonalFractions.length === 0 ? (
-                    <Skeleton height={20} mt={5} width="100%" radius="md" />
+                    <Skeleton height={20} mt={5} width='100%' radius='md' />
                   ) : (
                     <Select
-                      placeholder="Select Fraction"
+                      placeholder='Select Fraction'
                       value={faithfulOptions.seasonalFraction}
                       onChange={(value: string) => {
-                        handleFractionChange("seasonalFraction", value);
-                        handleFractionChange("standardFraction", "");
+                        handleFractionChange('seasonalFraction', value);
+                        handleFractionChange('standardFraction', '');
                       }}
                       data={fractionObject.seasonalFractions}
                       clearable
                       searchable
-                      sx={{ width: "100%" }}
+                      sx={{ width: '100%' }}
                     />
                   )
                 }
               />
 
               <FormField
-                title="Fraction Index"
+                title='Fraction Index'
                 options={
                   fractionObject.standardFractions.length === 0 ? (
-                    <Skeleton height={20} mt={5} width="100%" radius="md" />
+                    <Skeleton height={20} mt={5} width='100%' radius='md' />
                   ) : (
                     <Select
-                      placeholder="Select Fraction"
+                      placeholder='Select Fraction'
                       value={faithfulOptions.standardFraction}
                       onChange={(value: string) => {
-                        handleFractionChange("standardFraction", value);
-                        handleFractionChange("seasonalFraction", "");
+                        handleFractionChange('standardFraction', value);
+                        handleFractionChange('seasonalFraction', '');
                       }}
                       data={fractionObject.standardFractions}
                       clearable
                       searchable
-                      sx={{ width: "100%" }}
+                      sx={{ width: '100%' }}
                     />
                   )
                 }
@@ -611,7 +603,7 @@ const FaithfulLiturgy = () => {
       }
       footer={
         <Group>
-          <BackButton onClick={() => navigate("/liturgyofWord")} />
+          <BackButton onClick={() => navigate('/liturgyofWord')} />
           <NextButton onClick={handleSubmit} disabled={disabled} />
           <SaveButton onClick={Save} disabled={disabled} />
         </Group>
