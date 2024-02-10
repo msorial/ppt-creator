@@ -339,8 +339,6 @@ const FaithfulLiturgy = () => {
                           )
                         : []
                     }
-                    clearable
-                    searchable
                     sx={{ width: '100%' }}
                   />
                 }
@@ -568,8 +566,6 @@ const FaithfulLiturgy = () => {
                         handleFractionChange('standardFraction', '');
                       }}
                       data={fractionObject.seasonalFractions}
-                      clearable
-                      searchable
                       sx={{ width: '100%' }}
                     />
                   )
