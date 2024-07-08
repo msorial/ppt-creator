@@ -87,6 +87,12 @@ const Vespers = () => {
   };
   const setOptionalDoxologiesSelection = (value: string[]) => {
     console.log(vespersData?.seasonVespersDoxologies);
+    const newVespersData = { ...vespersData };
+    newVespersData.seasonVespersDoxologies = [
+      ...vespersData?.seasonVespersDoxologies,
+      value[value.length - 1],
+    ];
+    setVespersData(newVespersData);
   };
 
   const [searchQuery, setSearchQuery] = useState<string>('');
