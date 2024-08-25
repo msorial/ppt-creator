@@ -15,7 +15,7 @@ const ApprovalButton: React.FC<ApprovalButtonProps> = ({ onClick, size }) => {
       size={size}
       color='teal'
     >
-      Submit For Approval
+      Submit For Review
     </Button>
   );
 };
