@@ -1,16 +1,17 @@
 import {
   ActionIcon,
   Group,
+  Loader,
   LoadingOverlay,
   Menu,
   Overlay,
   Text,
 } from '@mantine/core';
 import { IconCircleCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
-import useDates from '../../store/useDates';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useDates from '../../store/useDates';
 import ApprovalButton from './ApprovalButton';
 
 export interface EndpointCheckProps {
@@ -26,6 +27,7 @@ const JumpButton = () => {
   const navigate = useNavigate();
   const { apiDate } = useDates();
   const [loading, setLoading] = useState<boolean>(true);
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [endpointCheck, setEndpointCheck] = useState<EndpointCheckProps>();
 
   useEffect(() => {
@@ -47,9 +49,11 @@ const JumpButton = () => {
   };
 
   const handleSubmit = () => {
+    setButtonLoading(true);
     axios
       .post('https://stmarkapi.com:5000/approval?date=' + apiDate)
       .then(() => {
+        setButtonLoading(false);
         navigate('/successapproval');
       })
       .catch((error) => {
@@ -161,7 +165,10 @@ const JumpButton = () => {
         </Menu.Item>
 
         <Group position='center' sx={{ padding: '10px 10px 8px' }}>
-          <ApprovalButton onClick={handleSubmit} size='xs' />
+          {buttonLoading && <Loader color='blue' size='lg' variant='dots' />}
+          {!buttonLoading && (
+            <ApprovalButton onClick={handleSubmit} size='xs' />
+          )}
         </Group>
       </Menu.Dropdown>
     </Menu>
