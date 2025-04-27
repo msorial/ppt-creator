@@ -6,7 +6,7 @@ interface UiState {
 }
 
 const useDates = create<UiState>((set) => ({
-  darkMode: false,
+  darkMode: true,
   toggleTheme: () => {
     set((state) => ({ darkMode: !state.darkMode }));
   },
