@@ -1,14 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  Flex,
-  Group,
-  ScrollArea,
-  Skeleton,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Button, Flex, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons-react';
 import axios from 'axios';
@@ -17,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import PageLayout from '../components/Layout/PageLayout';
 import BackButton from '../components/Reusable/BackButton';
 import CardHeader from '../components/Reusable/CardHeader';
+import DoxologyList from '../components/Reusable/DoxologyList';
 import FormCard from '../components/Reusable/FormCard';
 import FormField from '../components/Reusable/FormField';
 import FormHeader from '../components/Reusable/FormHeader';
@@ -56,6 +47,14 @@ interface VespersOptionsProps {
   fiveLitanies: string;
 }
 
+interface DoxologyItem {
+  id: string;
+  value: string;
+  label: string;
+  checked: boolean;
+  isOptional?: boolean;
+}
+
 const Vespers = () => {
   const navigate = useNavigate();
   const { apiDate, setSelectedCopticDates } = useDates();
@@ -69,88 +68,218 @@ const Vespers = () => {
     fiveLitanies: 'no',
   });
   const [disabled, setDisabled] = useState<boolean>(true);
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [seasonalDoxologies, setSeasonalDoxologies] = useState<DoxologyItem[]>(
+    []
+  );
+  const [optionalDoxologies, setOptionalDoxologies] = useState<DoxologyItem[]>(
+    []
+  );
   const [showOptionalDoxologies, setShowOptionalDoxologies] =
     useState<boolean>(false);
-
-  const handleCheckboxChangeOptional = (item: string, isChecked: boolean) => {
-    setCheckedItems((prev) =>
-      isChecked ? [...prev, item] : prev.filter((i) => i !== item)
-    );
-  };
-
-  const [optionalDoxologiesList, setOptionalDoxologiesList] = useState<
-    string[]
-  >([]);
   const [search, setSearch] = useState('');
 
-  const filteredList = optionalDoxologiesList.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase())
-  );
+  const loadOptionalDoxologies = () => {
+    if (showOptionalDoxologies) return; // Already loaded
 
-  const optionalDoxologies = () => {
     setShowOptionalDoxologies(true);
     fetch('https://stmarkapi.com:8080/optionalDoxologies')
       .then((response) => response.json())
       .then((data) => {
-        setOptionalDoxologiesList(data[0]);
+        const optionalItems: DoxologyItem[] = data[0].map(
+          (item: string, index: number) => ({
+            id: `optional-${index}`,
+            value: item,
+            label: item.split('/').slice(-1)[0].split('.pptx')[0],
+            checked: false,
+            isOptional: true,
+          })
+        );
+
+        // Merge with existing optional doxologies (from extra doxologies)
+        setOptionalDoxologies((prev) => {
+          const existingValues = prev.map((item) => item.value);
+          const newItems = optionalItems.filter(
+            (item) => !existingValues.includes(item.value)
+          );
+          return [...prev, ...newItems];
+        });
       })
       .catch((error) => {
         console.error('Error fetching API data:', error);
       });
   };
-  // This useEffect returns selections previously made
+  // This useEffect loads all data and sets up the initial state
   useEffect(() => {
-    fetch('https://stmarkapi.com:5000/vespers?date=' + apiDate)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data?.status !== 'No PPT For this date') {
-          setVesperOptions({
-            ...vesperOptions,
-            bishop: data?.bishop,
-            doxologies: data?.seasonVespersDoxologies,
-            gospelLitany: data?.vespersLitanyofTheGospel,
-            fiveLitanies: data?.vespers5ShortLitanies,
-          });
+    const loadData = async () => {
+      try {
+        // Fetch both API endpoints in parallel
+        const [apiResponse, savedResponse] = await Promise.all([
+          fetch('https://stmarkapi.com:8080/vespers?date=' + apiDate).then(
+            (res) => res.json()
+          ),
+          fetch('https://stmarkapi.com:5000/vespers?date=' + apiDate).then(
+            (res) => res.json()
+          ),
+        ]);
+
+        setSelectedCopticDates(apiResponse[0]);
+        setVespersData(apiResponse[1]);
+
+        // Get all saved doxologies (remove duplicates)
+        const savedDoxologies =
+          savedResponse?.status !== 'No PPT For this date'
+            ? (Array.from(
+                new Set(savedResponse.seasonVespersDoxologies || [])
+              ) as string[])
+            : [];
+
+        // Get API doxologies (remove duplicates)
+        const apiDoxologies = Array.from(
+          new Set(apiResponse[1]?.seasonVespersDoxologies || [])
+        ) as string[];
+
+        // Set vesper options
+        setVesperOptions({
+          bishop: savedResponse?.bishop || 'no',
+          doxologies: savedDoxologies,
+          gospelLitany: savedResponse?.vespersLitanyofTheGospel || 'standard',
+          fiveLitanies: savedResponse?.vespers5ShortLitanies || 'no',
+        });
+
+        // Create seasonal doxologies - combine API doxologies with saved ones
+        const allSeasonalDoxologies = Array.from(
+          new Set([...apiDoxologies, ...savedDoxologies])
+        ) as string[];
+        const seasonalItems: DoxologyItem[] = allSeasonalDoxologies.map(
+          (item: string, index: number) => ({
+            id: `seasonal-${index}`,
+            value: item,
+            label: item.split('/').slice(-1)[0].split('.pptx')[0],
+            checked: savedDoxologies.includes(item),
+            isOptional: false,
+          })
+        );
+        setSeasonalDoxologies(seasonalItems);
+
+        // Find extra doxologies that are in saved data but not in API data
+        const extraDoxologies = savedDoxologies.filter(
+          (saved: string) => !apiDoxologies.includes(saved)
+        );
+
+        if (extraDoxologies.length > 0) {
+          const extraItems: DoxologyItem[] = extraDoxologies.map(
+            (item: string, index: number) => ({
+              id: `extra-${index}`,
+              value: item,
+              label: item.split('/').slice(-1)[0].split('.pptx')[0],
+              checked: true,
+              isOptional: true,
+            })
+          );
+          setOptionalDoxologies(extraItems);
+          setShowOptionalDoxologies(true);
         }
-      })
-      .catch((error) => {
-        console.error('Error fetching API data:', error);
-      });
-  }, []);
 
-  // This useEffect returns ALL options for that given date
-  useEffect(() => {
-    fetch('https://stmarkapi.com:8080/vespers?date=' + apiDate)
-      .then((response) => response.json())
-      .then((data) => {
-        setSelectedCopticDates(data[0]);
-        setVespersData(data[1]);
+        // Always load optional doxologies on page load
+        loadOptionalDoxologies();
+
         setDisabled(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching API data:', error);
-      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setDisabled(false);
+      }
+    };
+
+    loadData();
   }, []);
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const handleSeasonalDoxologyToggle = (
+    item: DoxologyItem,
+    isChecked: boolean
+  ) => {
+    setSeasonalDoxologies((prev) =>
+      prev.map((dox) =>
+        dox.id === item.id ? { ...dox, checked: isChecked } : dox
+      )
+    );
 
-    setVesperOptions((prevOptions: any) => {
-      const newOptions = prevOptions.doxologies.includes(value)
-        ? prevOptions.doxologies.filter((item: any) => item !== value)
-        : [...prevOptions.doxologies, value];
-
-      // Sort the new options array based on the original order
-      const sortedOptions = vespersData?.seasonVespersDoxologies.filter(
-        (item) => newOptions.includes(item)
-      );
+    setVesperOptions((prevOptions) => {
+      const newDoxologies = isChecked
+        ? [...prevOptions.doxologies, item.value]
+        : prevOptions.doxologies.filter((dox) => dox !== item.value);
 
       return {
         ...prevOptions,
-        doxologies: sortedOptions,
+        doxologies: newDoxologies,
       };
     });
+  };
+
+  const handleOptionalDoxologyToggle = (
+    item: DoxologyItem,
+    isChecked: boolean
+  ) => {
+    // Update optional doxologies
+    setOptionalDoxologies((prev) =>
+      prev.map((dox) =>
+        dox.id === item.id ? { ...dox, checked: isChecked } : dox
+      )
+    );
+
+    if (isChecked) {
+      // Move to seasonal doxologies and update vesper options in one go
+      setSeasonalDoxologies((prev) => {
+        const exists = prev.some((dox) => dox.value === item.value);
+        if (!exists) {
+          const newItem: DoxologyItem = {
+            ...item,
+            id: `seasonal-${Date.now()}`,
+            isOptional: false,
+            checked: true,
+          };
+          const newSeasonal = [...prev, newItem];
+
+          // Update vesper options with the new doxology
+          setVesperOptions((prevOptions) => ({
+            ...prevOptions,
+            doxologies: [...prevOptions.doxologies, item.value],
+          }));
+
+          return newSeasonal;
+        }
+        return prev.map((dox) =>
+          dox.value === item.value ? { ...dox, checked: true } : dox
+        );
+      });
+    } else {
+      // Remove from seasonal doxologies and update vesper options
+      setSeasonalDoxologies((prev) =>
+        prev.filter((dox) => dox.value !== item.value)
+      );
+
+      setVesperOptions((prev) => ({
+        ...prev,
+        doxologies: prev.doxologies.filter((dox) => dox !== item.value),
+      }));
+    }
+  };
+
+  const handleSeasonalDoxologyReorder = (items: DoxologyItem[]) => {
+    setSeasonalDoxologies(items);
+    // Only update vesper options if this is actually a reorder (not an add operation)
+    // The vesper options will be updated by the toggle functions
+    const newDoxologies = items
+      .filter((item) => item.checked)
+      .map((item) => item.value);
+
+    setVesperOptions((prev) => ({
+      ...prev,
+      doxologies: newDoxologies,
+    }));
+  };
+
+  const handleOptionalDoxologyReorder = (items: DoxologyItem[]) => {
+    setOptionalDoxologies(items);
   };
   const Save = () => {
     if (hasEmptyValues(vesperOptions)) {
@@ -169,12 +298,15 @@ const Vespers = () => {
         loading: true,
         id: 'save',
       });
-      console.log('This message will be logged immediately.');
+
       const modifiedVespersData = { ...vespersData };
-      const combined = [...vesperOptions.doxologies, ...checkedItems];
+
+      // Only use seasonal doxologies (which already includes moved optional ones)
+      // Remove duplicates to ensure clean data
+      const uniqueDoxologies = Array.from(new Set(vesperOptions.doxologies));
 
       modifiedVespersData.bishop = vesperOptions.bishop;
-      modifiedVespersData.seasonVespersDoxologies = combined;
+      modifiedVespersData.seasonVespersDoxologies = uniqueDoxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
@@ -206,12 +338,12 @@ const Vespers = () => {
       });
     } else {
       // Modified Copy of Vespers Data to Post to API
-      const combined = Array.from(
-        new Set([...vesperOptions.doxologies, ...checkedItems])
-      );
+      // Only use seasonal doxologies (which already includes moved optional ones)
+      // Remove duplicates to ensure clean data
+      const uniqueDoxologies = Array.from(new Set(vesperOptions.doxologies));
       const modifiedVespersData = { ...vespersData };
       modifiedVespersData.bishop = vesperOptions.bishop;
-      modifiedVespersData.seasonVespersDoxologies = combined;
+      modifiedVespersData.seasonVespersDoxologies = uniqueDoxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
@@ -262,84 +394,27 @@ const Vespers = () => {
                 }
               />
 
-              <Stack align='flex-start' spacing={5}>
-                <Text fz='md' fw={500}>
-                  Seasonal Vespers Doxologies
-                </Text>
-
-                {vespersData?.seasonVespersDoxologies
-                  ? vespersData?.seasonVespersDoxologies.map(
-                      (item: string, index: number) => (
-                        <Checkbox
-                          mt='sm'
-                          key={index}
-                          value={item}
-                          checked={vesperOptions.doxologies.includes(item)}
-                          onChange={handleCheckboxChange}
-                          label={item.split('/').slice(-1)[0].split('.')[0]}
-                          transitionDuration={0}
-                        />
-                      )
-                    )
-                  : [1, 2, 3, 4].map((index: number) => (
-                      <Skeleton
-                        height={20}
-                        mt={5}
-                        width={Math.floor(Math.random() * (100 - 75 + 1)) + 75}
-                        radius='md'
-                        key={index}
-                      />
-                    ))}
-              </Stack>
+              <DoxologyList
+                title='Seasonal Vespers Doxologies'
+                items={seasonalDoxologies}
+                onItemToggle={handleSeasonalDoxologyToggle}
+                onReorder={handleSeasonalDoxologyReorder}
+                isLoading={!vespersData}
+              />
 
               {showOptionalDoxologies ? (
-                <Stack align='flex-start' spacing={5}>
-                  <Text fz='md' fw={500}>
-                    Optional Doxologies
-                  </Text>
-
-                  <TextInput
-                    placeholder='Search...'
-                    value={search}
-                    onChange={(event) => setSearch(event.currentTarget.value)}
-                    mb='sm'
-                  />
-
-                  <ScrollArea style={{ height: 200 }} type='scroll'>
-                    {optionalDoxologiesList.length > 0
-                      ? filteredList.map((item: string, index: number) => (
-                          <Checkbox
-                            mt='sm'
-                            key={index}
-                            value={item}
-                            checked={checkedItems.includes(item)}
-                            onChange={(event) =>
-                              handleCheckboxChangeOptional(
-                                item,
-                                event.currentTarget.checked
-                              )
-                            }
-                            label={
-                              item.split('/').slice(-1)[0].split('.pptx')[0]
-                            }
-                            transitionDuration={0}
-                          />
-                        ))
-                      : [1, 2, 3, 4].map((index: number) => (
-                          <Skeleton
-                            height={20}
-                            mt={5}
-                            width={
-                              Math.floor(Math.random() * (100 - 75 + 1)) + 75
-                            }
-                            radius='md'
-                            key={index}
-                          />
-                        ))}
-                  </ScrollArea>
-                </Stack>
+                <DoxologyList
+                  title='Optional Doxologies'
+                  items={optionalDoxologies}
+                  onItemToggle={handleOptionalDoxologyToggle}
+                  onReorder={handleOptionalDoxologyReorder}
+                  showSearch={true}
+                  searchValue={search}
+                  onSearchChange={setSearch}
+                  isLoading={optionalDoxologies.length === 0}
+                />
               ) : (
-                <Button onClick={optionalDoxologies}>
+                <Button onClick={loadOptionalDoxologies}>
                   + Optional Doxologies
                 </Button>
               )}
