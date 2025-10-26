@@ -67,69 +67,69 @@ function SortableDoxologyItem({ item, onToggle }: SortableDoxologyItemProps) {
   return (
     <div ref={setNodeRef} style={style}>
       <div
+        {...attributes}
+        {...listeners}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          padding: '8px 0',
+          padding: '8px 12px',
           minHeight: '44px', // Minimum touch target size for mobile
+          borderRadius: '8px',
+          backgroundColor: 'rgba(0, 0, 0, 0.01)',
+          border: '1px solid transparent',
+          transition: 'all 0.2s ease',
+          cursor: 'grab',
+          touchAction: 'none',
+          userSelect: 'none',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.cursor = 'grabbing';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.01)';
+          e.currentTarget.style.borderColor = 'transparent';
+          e.currentTarget.style.cursor = 'grab';
+        }}
+        onTouchStart={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+        }}
+        onTouchEnd={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.01)';
+          e.currentTarget.style.borderColor = 'transparent';
+        }}
+        onClick={(e) => {
+          // Prevent drag from triggering checkbox toggle
+          e.stopPropagation();
+          onToggle(item, !item.checked);
         }}
       >
         <div
-          {...attributes}
-          {...listeners}
           style={{
-            cursor: 'grab',
-            padding: '8px',
-            borderRadius: '6px',
-            backgroundColor: 'rgba(0, 0, 0, 0.02)',
-            border: '1px solid transparent',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: '32px',
-            minHeight: '32px',
-            touchAction: 'none',
-            userSelect: 'none',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
-            e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-            e.currentTarget.style.cursor = 'grabbing';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
-            e.currentTarget.style.borderColor = 'transparent';
-            e.currentTarget.style.cursor = 'grab';
-          }}
-          onTouchStart={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
-            e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-          }}
-          onTouchEnd={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
-            e.currentTarget.style.borderColor = 'transparent';
+            fontSize: '14px',
+            color: '#666',
+            lineHeight: 1,
+            fontWeight: 'bold',
+            minWidth: '20px',
+            textAlign: 'center',
           }}
         >
-          <div
-            style={{
-              fontSize: '14px',
-              color: '#666',
-              lineHeight: 1,
-              fontWeight: 'bold',
-            }}
-          >
-            ⋮⋮
-          </div>
+          ⋮⋮
         </div>
         <div style={{ flex: 1 }}>
           <Checkbox
             value={item.value}
             checked={item.checked}
-            onChange={(event) => onToggle(item, event.currentTarget.checked)}
+            onChange={(event) => {
+              event.stopPropagation();
+              onToggle(item, event.currentTarget.checked);
+            }}
             label={item.label}
             transitionDuration={0}
+            style={{ pointerEvents: 'none' }} // Disable checkbox pointer events since we handle clicks on the container
           />
         </div>
       </div>
