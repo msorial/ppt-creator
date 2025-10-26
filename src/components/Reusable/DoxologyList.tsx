@@ -70,8 +70,9 @@ function SortableDoxologyItem({ item, onToggle }: SortableDoxologyItemProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          padding: '4px 0',
+          gap: '12px',
+          padding: '8px 0',
+          minHeight: '44px', // Minimum touch target size for mobile
         }}
       >
         <div
@@ -79,31 +80,44 @@ function SortableDoxologyItem({ item, onToggle }: SortableDoxologyItemProps) {
           {...listeners}
           style={{
             cursor: 'grab',
-            padding: '4px',
-            borderRadius: '4px',
+            padding: '8px',
+            borderRadius: '6px',
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
             border: '1px solid transparent',
             transition: 'all 0.2s ease',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '20px',
-            height: '20px',
+            minWidth: '32px',
+            minHeight: '32px',
+            touchAction: 'none',
+            userSelect: 'none',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
             e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+            e.currentTarget.style.cursor = 'grabbing';
           }}
           onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
+            e.currentTarget.style.borderColor = 'transparent';
+            e.currentTarget.style.cursor = 'grab';
+          }}
+          onTouchStart={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+            e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+          }}
+          onTouchEnd={(e) => {
             e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
             e.currentTarget.style.borderColor = 'transparent';
           }}
         >
           <div
             style={{
-              fontSize: '12px',
+              fontSize: '14px',
               color: '#666',
               lineHeight: 1,
+              fontWeight: 'bold',
             }}
           >
             ⋮⋮
@@ -134,7 +148,11 @@ export default function DoxologyList({
   isLoading = false,
 }: DoxologyListProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -190,6 +208,14 @@ export default function DoxologyList({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          accessibility={{
+            announcements: {
+              onDragStart: (id) => `Started dragging item ${id}`,
+              onDragOver: (id) => `Dragging over item ${id}`,
+              onDragEnd: (id) => `Dropped item ${id}`,
+              onDragCancel: (id) => `Cancelled dragging item ${id}`,
+            },
+          }}
         >
           <SortableContext
             items={items.map((item) => item.id)}
