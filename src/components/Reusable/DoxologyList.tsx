@@ -158,24 +158,41 @@ export default function DoxologyList({
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
-
-      const newItems = arrayMove(items, oldIndex, newIndex);
-      onReorder(newItems);
-    }
-  };
-
   const filteredItems =
     showSearch && searchValue
       ? items.filter((item) =>
           item.label.toLowerCase().includes(searchValue.toLowerCase())
         )
       : items;
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      // Use filteredItems indices when search is active, otherwise use full items array
+      const itemsToUse = showSearch && searchValue ? filteredItems : items;
+      const oldIndex = itemsToUse.findIndex((item) => item.id === active.id);
+      const newIndex = itemsToUse.findIndex((item) => item.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      // If search is active, we need to map the filtered indices back to the full array
+      if (showSearch && searchValue) {
+        const oldItem = filteredItems[oldIndex];
+        const newItem = filteredItems[newIndex];
+        const oldIndexInFull = items.findIndex((item) => item.id === oldItem.id);
+        const newIndexInFull = items.findIndex((item) => item.id === newItem.id);
+        
+        if (oldIndexInFull !== -1 && newIndexInFull !== -1) {
+          const newItems = arrayMove(items, oldIndexInFull, newIndexInFull);
+          onReorder(newItems);
+        }
+      } else {
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        onReorder(newItems);
+      }
+    }
+  };
 
   return (
     <Stack align='flex-start' spacing={5}>
@@ -218,7 +235,7 @@ export default function DoxologyList({
           }}
         >
           <SortableContext
-            items={items.map((item) => item.id)}
+            items={filteredItems.map((item) => item.id)}
             strategy={verticalListSortingStrategy}
           >
             {showSearch ? (

@@ -197,21 +197,22 @@ const Vespers = () => {
     item: DoxologyItem,
     isChecked: boolean
   ) => {
-    setSeasonalDoxologies((prev) =>
-      prev.map((dox) =>
+    setSeasonalDoxologies((prev) => {
+      const updated = prev.map((dox) =>
         dox.id === item.id ? { ...dox, checked: isChecked } : dox
-      )
-    );
-
-    setVesperOptions((prevOptions) => {
-      const newDoxologies = isChecked
-        ? [...prevOptions.doxologies, item.value]
-        : prevOptions.doxologies.filter((dox) => dox !== item.value);
-
-      return {
+      );
+      
+      // Update vesper options to match the exact order of checked items in the list
+      const newDoxologies = updated
+        .filter((dox) => dox.checked)
+        .map((dox) => dox.value);
+      
+      setVesperOptions((prevOptions) => ({
         ...prevOptions,
         doxologies: newDoxologies,
-      };
+      }));
+      
+      return updated;
     });
   };
 
@@ -230,6 +231,8 @@ const Vespers = () => {
       // Move to seasonal doxologies and update vesper options in one go
       setSeasonalDoxologies((prev) => {
         const exists = prev.some((dox) => dox.value === item.value);
+        let newSeasonal: DoxologyItem[];
+        
         if (!exists) {
           const newItem: DoxologyItem = {
             ...item,
@@ -237,37 +240,50 @@ const Vespers = () => {
             isOptional: false,
             checked: true,
           };
-          const newSeasonal = [...prev, newItem];
-
-          // Update vesper options with the new doxology
-          setVesperOptions((prevOptions) => ({
-            ...prevOptions,
-            doxologies: [...prevOptions.doxologies, item.value],
-          }));
-
-          return newSeasonal;
+          newSeasonal = [...prev, newItem];
+        } else {
+          newSeasonal = prev.map((dox) =>
+            dox.value === item.value ? { ...dox, checked: true } : dox
+          );
         }
-        return prev.map((dox) =>
-          dox.value === item.value ? { ...dox, checked: true } : dox
-        );
+
+        // Update vesper options to match the exact order of checked items in the list
+        const newDoxologies = newSeasonal
+          .filter((dox) => dox.checked)
+          .map((dox) => dox.value);
+
+        setVesperOptions((prevOptions) => ({
+          ...prevOptions,
+          doxologies: newDoxologies,
+        }));
+
+        return newSeasonal;
       });
     } else {
       // Remove from seasonal doxologies and update vesper options
-      setSeasonalDoxologies((prev) =>
-        prev.filter((dox) => dox.value !== item.value)
-      );
+      setSeasonalDoxologies((prev) => {
+        const updated = prev.filter((dox) => dox.value !== item.value);
+        
+        // Update vesper options to match the exact order of checked items in the list
+        const newDoxologies = updated
+          .filter((dox) => dox.checked)
+          .map((dox) => dox.value);
 
-      setVesperOptions((prev) => ({
-        ...prev,
-        doxologies: prev.doxologies.filter((dox) => dox !== item.value),
-      }));
+        setVesperOptions((prevOptions) => ({
+          ...prevOptions,
+          doxologies: newDoxologies,
+        }));
+        
+        return updated;
+      });
     }
   };
 
   const handleSeasonalDoxologyReorder = (items: DoxologyItem[]) => {
+    // Update the seasonal doxologies with the new order
     setSeasonalDoxologies(items);
-    // Only update vesper options if this is actually a reorder (not an add operation)
-    // The vesper options will be updated by the toggle functions
+    
+    // Update vesper options with checked items in the correct order
     const newDoxologies = items
       .filter((item) => item.checked)
       .map((item) => item.value);
@@ -301,12 +317,14 @@ const Vespers = () => {
 
       const modifiedVespersData = { ...vespersData };
 
-      // Only use seasonal doxologies (which already includes moved optional ones)
-      // Remove duplicates to ensure clean data
-      const uniqueDoxologies = Array.from(new Set(vesperOptions.doxologies));
+      // Use the exact order from seasonal doxologies (which already includes moved optional ones)
+      // Get checked items in the exact order they appear in the displayed list
+      const orderedDoxologies = seasonalDoxologies
+        .filter((dox) => dox.checked)
+        .map((dox) => dox.value);
 
       modifiedVespersData.bishop = vesperOptions.bishop;
-      modifiedVespersData.seasonVespersDoxologies = uniqueDoxologies;
+      modifiedVespersData.seasonVespersDoxologies = orderedDoxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
@@ -338,12 +356,15 @@ const Vespers = () => {
       });
     } else {
       // Modified Copy of Vespers Data to Post to API
-      // Only use seasonal doxologies (which already includes moved optional ones)
-      // Remove duplicates to ensure clean data
-      const uniqueDoxologies = Array.from(new Set(vesperOptions.doxologies));
+      // Use the exact order from seasonal doxologies (which already includes moved optional ones)
+      // Get checked items in the exact order they appear in the displayed list
+      const orderedDoxologies = seasonalDoxologies
+        .filter((dox) => dox.checked)
+        .map((dox) => dox.value);
+      
       const modifiedVespersData = { ...vespersData };
       modifiedVespersData.bishop = vesperOptions.bishop;
-      modifiedVespersData.seasonVespersDoxologies = uniqueDoxologies;
+      modifiedVespersData.seasonVespersDoxologies = orderedDoxologies;
       modifiedVespersData.vespersLitanyofTheGospel = vesperOptions.gospelLitany;
       modifiedVespersData.vespers5ShortLitanies = vesperOptions.fiveLitanies;
 
